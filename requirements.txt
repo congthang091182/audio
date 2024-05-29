@@ -1,5 +1,3 @@
 streamlit==1.34.0
-datetime
 pyodbc==4.0.39
-time
-python==3.11.9
+#python 3.12.3
