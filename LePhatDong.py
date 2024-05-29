@@ -1,15 +1,22 @@
 import streamlit as st 
-import pandas as pd
-import numpy as np
+#import pandas as pd
+#import numpy as np
 import pyodbc 
 import datetime as dt
 import time
-
+import os
 #Connect to database
-cnxn = pyodbc.connect("Driver={SQL Server};"
-                      "Server=27.72.163.235,1433\SQLSERVER;"
-                      "Database=APPNHAOXH;"
-                      "uid=sa;pwd=070999aaaAAA@@@#")
+#
+db_user = st.secrets["db_credentials"]["user"]
+db_password = st.secrets["db_credentials"]["password"]
+db_host = st.secrets["db_credentials"]["host"]
+db_database = st.secrets["db_credentials"]["Database"]
+cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
+                      f'SERVER={db_host};'
+                      f'DATABASE={db_database};'
+                      f'UID={db_user};'
+                      f'PWD={db_password}')
+  #username=st.secrets.db_credentials.username, password=st.secrets.db_credentials.password)
 #//connect open
 st.header(':orange[Gửi tiền tiết kiệm, chung tay vì người nghèo]', divider='rainbow')
 #st.header('_Streamlit_ is :blue[cool] :sunglasses:')
