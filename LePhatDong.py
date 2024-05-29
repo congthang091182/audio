@@ -7,14 +7,25 @@ import time
 import os
 import openai
 #Connect to database
-openai.api_key=st.secrets["db_credentials"]["api_key"]
+openai.api_key=st.secrets["db_credentials"]["DB_TOKEN"]
 #
 db_user = st.secrets["db_credentials"]["user"]
-db_user = st.secrets["db_credentials"]["user"]
+#db_user = st.secrets["db_credentials"]["user"]
 db_password = st.secrets["db_credentials"]["password"]
 db_host = st.secrets["db_credentials"]["host"]
 db_database = st.secrets["db_credentials"]["Database"]
 #api_key = st.secrets["db_credentials"]["api_key"]
+# Define a function to generate text using the OpenAI API
+def generate_text(prompt):
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=100,
+        n=1,
+        stop=None,
+        temperature=0.7,
+    )
+    return response.choices[0].text.strip()
 cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
                       f'SERVER={db_host};'
                       f'DATABASE={db_database};'
