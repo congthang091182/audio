@@ -1,5 +1,5 @@
-streamlit
+streamlit==1.34.0
 datetime
-pyodbc
+pyodbc==4.0.39
 time
 python==3.11.9
