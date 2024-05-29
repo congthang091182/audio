@@ -2,3 +2,4 @@ streamlit
 datetime
 pyodbc
 time
+python==3.11.9
