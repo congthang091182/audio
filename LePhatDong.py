@@ -7,12 +7,12 @@ import time
 import os
 import openai
 #Connect to database
-openai.api_key=st.secrets["db_credentials"]["api_key"]
 db_user = st.secrets["db_credentials"]["user"]
 db_password = st.secrets["db_credentials"]["password"]
 db_host = st.secrets["db_credentials"]["host"]
 db_database = st.secrets["db_credentials"]["Database"]
-
+openai.api_key=st.secrets["db_credentials"]["api_key"]
+#st.write("db_credentials abc:", openai.api_key)
 cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};'
                       f'SERVER={db_host};'
                       f'DATABASE={db_database};'
