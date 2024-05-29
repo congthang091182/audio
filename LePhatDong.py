@@ -5,9 +5,9 @@ import pyodbc
 import datetime as dt
 import time
 import os
-#import openai
+import openai
 #Connect to database
-api_key=st.secrets["db_credentials"]["api_key"]
+openai.api_key=st.secrets["db_credentials"]["api_key"]
 #
 db_user = st.secrets["db_credentials"]["user"]
 db_user = st.secrets["db_credentials"]["user"]
