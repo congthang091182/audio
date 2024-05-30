@@ -1,11 +1,12 @@
 import streamlit as st 
-#import pandas as pd
-#import numpy as np
+import pandas as pd
+import numpy as np
 import pyodbc 
 import datetime as dt
 import time
 import os
 import openai
+#import altair as alt
 #Connect to database
 db_user = st.secrets["db_credentials"]["user"]
 db_password = st.secrets["db_credentials"]["password"]
@@ -32,8 +33,9 @@ title = st.text_input(":red[Họ và tên (*)]","")
 
 #title = st.text_input(":orange[Enter your text here]")
 today = dt.datetime.now()
+start_date = dt.datetime(1900, 1, 1,)
 #st.button("Subit", type="primary")
-d = st.date_input("Ngày tháng năm sinh", today , format="DD-MM-YYYY",)
+d = st.date_input("Ngày tháng năm sinh", min_value=start_date,max_value= today , format="DD-MM-YYYY",)
 title0 = st.text_input("Số CMT (nếu có)", "")
 title1 = st.text_input(":red[Số CCCD(*)]", "")
 d0 = st.date_input("Ngày cấp", today , format="DD-MM-YYYY",)
@@ -80,7 +82,35 @@ if click:
   
   #st.button("Clear", on_click=on_click)
   st.success('Cảm ơn bạn đã đăng ký')
-
+#nếu click xem
+click0=st.button("Xem số lượng khách hàng đã đăng ký")
+if click0:
+  para = ()
+  query  = "select TOCHUCHOI N'Tổ chức hội',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY TOCHUCHOI"
+  data=cursor.execute(query,para).fetchall()
+  df = pd.DataFrame.from_records(
+                    data=data,
+                    columns=[column_info[0] for column_info in cursor.description],
+                    coerce_float=True
+                )
+  para0 = ()
+  query0  = "select POS N'Nơi gửi',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY POS"
+  data0=cursor.execute(query0,para0).fetchall()
+  df0 = pd.DataFrame.from_records(
+                    data=data0,
+                    columns=[column_info[0] for column_info in cursor.description],
+                    coerce_float=True
+                )
+  #st.write(df)
+# chart = alt.Chart(df).mark_bar().encode(
+#         alt.X("SOKH", bin=True),
+#         y='count()',
+#     )
+  tab1, tab2 = st.tabs(["Theo đơn vị ủy thác", "Theo nơi gửi"])
+  with tab1:
+          st.write(df, theme="streamlit", use_container_width=True)
+  with tab2:
+          st.write(df0, theme=None, use_container_width=True)
 #connect close
 #cursor.close()
 cnxn.close()
