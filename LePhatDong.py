@@ -111,13 +111,17 @@ if click:
 st.header(':white[Thống kê số liệu]', divider='rainbow')
 click0=st.button("Xem số lượng khách hàng đã đăng ký")
 if click0:
+  colors = ['red', 'blue', 'green', 'yellow']
+  
   para = ()
   query  = "select TOCHUCHOI N'Tổ chức hội',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY TOCHUCHOI"
+  
   data=cursor.execute(query,para).fetchall()
   df = pd.DataFrame.from_records(
                     data=data,
                     columns=[column_info[0] for column_info in cursor.description],
-                    coerce_float=True
+                    coerce_float=True,
+                    #Color= adjusted_colors
                 )
   para0 = ()
   query0  = "select POS N'Nơi gửi',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY POS"
@@ -142,18 +146,19 @@ if click0:
 #     )
   tab1, tab2, tab3 = st.tabs(["Theo đơn vị ủy thác", "Theo nơi gửi","Theo đơn vị công tác"])
   with tab1:
+          #adjusted_colors = colors[:len("Tổ chức hội")]
           st.write(df, theme="streamlit", use_container_width=True)
-          fig = px.bar(df, x='Tổ chức hội', y='Số khách hàng', title='Biểu đồ số lượng tổ chức hội', color=['red', 'green', 'blue','orange'])
+          fig = px.bar(df, x='Tổ chức hội', y='Số khách hàng', title='Biểu đồ số lượng tổ chức hội', color=colors[:len(df['Tổ chức hội'])] )#, color=['red', 'green', 'blue','orange'])
 
           # Displaying the Plotly chart in Streamlit
           st.plotly_chart(fig)
   with tab2:
           st.write(df0, theme=None, use_container_width=True)
-          fig = px.bar(df0, x='Nơi gửi', y='Số khách hàng', title='Biểu đồ số lượng POS')
+          fig = px.bar(df0, x='Nơi gửi', y='Số khách hàng', title='Biểu đồ số lượng POS', color=colors[:len(df0['Nơi gửi'])] )
           st.plotly_chart(fig)
   with tab3:
           st.write(df1, theme=None, use_container_width=True)
-          fig = px.line(df1, x='Đơn vị công tác', y='Số khách hàng', title='Biểu đồ theo ĐVCT')
+          fig = px.line(df1, x='Đơn vị công tác', y='Số khách hàng', title='Biểu đồ theo ĐVCT', color=colors[:len(df1['Đơn vị công tác'])] )
           st.plotly_chart(fig)
 #connect close
 #cursor.close()
