@@ -111,7 +111,7 @@ if click:
 st.header(':white[Thống kê số liệu]', divider='rainbow')
 click0=st.button("Xem số lượng khách hàng đã đăng ký")
 if click0:
-  colors = ['red', 'blue', 'green', 'yellow','aqua','azure','azure','beige','black','brown','cyan','darkblue','darkcyan','darkgreen','darkkhaki'
+  colors = ['virginica', 'blue','red', 'green', 'yellow','aqua','azure','azure','beige','black','brown','cyan','darkblue','darkcyan','darkgreen','darkkhaki'
             ,'darkmagenta','darkolivegreen','darkorchid','darkred','darksalmon','darkviolet','fuchsia','gold','indigo','lightblue','navy']
 #   Colors.names = {
    
@@ -148,8 +148,8 @@ if click0:
 #     yellow: "#ffff00"
 # };
   para = ()
-  query  = "select TOCHUCHOI N'Tổ chức hội',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY TOCHUCHOI"
-  
+  #query  = "select TOCHUCHOI N'Tổ chức hội',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY TOCHUCHOI"
+  query  = "exec get_LPD_TOCHUCHOI"
   data=cursor.execute(query,para).fetchall()
   df = pd.DataFrame.from_records(
                     data=data,
@@ -158,7 +158,8 @@ if click0:
                     #Color= adjusted_colors
                 )
   para0 = ()
-  query0  = "select POS N'Nơi gửi',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY POS"
+  #query0  = "select POS N'Nơi gửi',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY POS"
+  query0  = "exec get_LPD_THEOPOS"
   data0=cursor.execute(query0,para0).fetchall()
   df0 = pd.DataFrame.from_records(
                     data=data0,
@@ -166,7 +167,8 @@ if click0:
                     coerce_float=True
                 )
   para1 = ()
-  query1  = "select DONVI N'Đơn vị công tác',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY DONVI order by DONVI"
+  #query1  = "select DONVI N'Đơn vị công tác',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY DONVI order by DONVI"
+  query1 = "exec get_LPD_THEODONVI"
   data1=cursor.execute(query1,para1).fetchall()
   df1 = pd.DataFrame.from_records(
                     data=data1,
@@ -182,7 +184,8 @@ if click0:
   with tab1:
           #adjusted_colors = colors[:len("Tổ chức hội")]
           st.write(df, theme="streamlit", use_container_width=True)
-          fig = px.bar(df, x='Tổ chức hội', y='Số khách hàng', title='Biểu đồ số lượng tổ chức hội', color=colors[:len(df['Tổ chức hội'])] )#, color=['red', 'green', 'blue','orange'])
+          color_discrete_map = {'virginica': 'blue', 'setosa': 'red', 'versicolor': 'green'}
+          fig = px.bar(df, x='Tổ chức hội', y='Số khách hàng', title='Biểu đồ số lượng tổ chức hội', color=colors[:len(df['MA'])])#, color=['red', 'green', 'blue','orange'])
 
           # Displaying the Plotly chart in Streamlit
           st.plotly_chart(fig)
