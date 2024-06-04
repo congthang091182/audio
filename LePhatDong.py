@@ -56,11 +56,11 @@ st.markdown("""
             </style>
             """,unsafe_allow_html=True)
 st.subheader("Đăng ký thông tin khách hàng")
-with st.form("form2"):
+with st.form("form2",clear_on_submit=True):
     today = dt.datetime.now()
     start_date = dt.datetime(1900, 1, 1,)
     col1,col2=st.columns(2)
-    title=col1.text_input(":red[Họ và tên (*)]","")
+    title=col1.text_input(":red[Họ và tên (*)]")
     d=col2.date_input("Ngày tháng năm sinh", min_value=start_date,max_value= today , format="DD-MM-YYYY",)
     col3,col4=st.columns(2)
     title0=col3.text_input("Số CMT cũ (nếu có)")
@@ -121,19 +121,18 @@ with st.form("form2"):
     st.write(":red[(*)]  bắt buộc")
     st.click=st.form_submit_button("Đồng ý")
     if st.click:
+        #if st.title=="" and st.title0=="":
+           #st.warning("This is a warning message!")
         d= d.strftime("%x")
         d0= d0.strftime("%x")
         d1=today.strftime("%x")
         para = (                          title,d,title0,title1,d0,title2,title3,title4,sotien,combobox,combobox1,combobox0,d1)
         query=""" insert into lephatdong (HOTEN,NGAYSINH,CMT_CU,CCCD,NGAYCAP,NOICAP,DIACHI,DIENTHOAI,SOTIEN,TOCHUCHOI,DONVI,POS,NGAYDANGKY) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"""
-            #query  = "exec LEPHATDONG_INSERT @HOTEN=?,@NGAYSINH=?,@CMT_CU=?,@CCCD=?,@NGAYCAP=?,@DIACHI=?,@DIENTHOAI=?,@SOTIEN=?,@TOCHUCHOI=?,@DONVI=?"
+                #query  = "exec LEPHATDONG_INSERT @HOTEN=?,@NGAYSINH=?,@CMT_CU=?,@CCCD=?,@NGAYCAP=?,@DIACHI=?,@DIENTHOAI=?,@SOTIEN=?,@TOCHUCHOI=?,@DONVI=?"
         cursor.execute(query,para)
-        def clear_text():
-                title = st.empty()
-                title0 = st.empty()
         cnxn.commit()
-        clear_text()
-        st.success('Cảm ơn bạn đã đăng ký')
+        #else:
+        st.success(f"Cảm ơn bạn đã đăng ký:  {title}")
 st.header(':white[Thống kê số liệu]', divider='rainbow')
 click0=st.button("Xem số lượng khách hàng đã đăng ký")
 if click0:
@@ -188,7 +187,7 @@ if click0:
           st.plotly_chart(fig)
   with tab3:
           st.write(df1, theme=None, use_container_width=True)
-          fig = px.line(df1, x='Đơn vị công tác', y='Số khách hàng', title='Biểu đồ theo ĐVCT', color=colors[:len(df1['Đơn vị công tác'])] )
+          fig = px.bar(df1, x='Đơn vị công tác', y='Số khách hàng', title='Biểu đồ theo ĐVCT', color=colors[:len(df1['Đơn vị công tác'])] )
           st.plotly_chart(fig)
 #connect close
 #cursor.close()
