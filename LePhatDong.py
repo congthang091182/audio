@@ -84,7 +84,7 @@ with st.form("form2"):
    placeholder="click để chọn...",
 )
     #col10=st.columns(1)
-    title3=st.text_input(":red[Địa chỉ thường trú(*)]", "")
+    title3=st.text_input(":red[Địa chỉ thường trú(*),ex: số nhà, đường, khối/thôn/bản, phường/xã,tỉnh...]", "")
     #col11=st.columns(1)
     combobox = st.selectbox(
    "Đơn vị ủy thác",
@@ -95,7 +95,8 @@ with st.form("form2"):
    placeholder="click để chọn...",
 )
     #col12=st.columns(1)
-    title6=  st.text_input("Đơn vị công tác")
+    title6=  st.text_input(":red[Đơn vị công tác(*)]", "")
+    st.write(":red[(*)]  bắt buộc")
     st.click=st.form_submit_button("Đồng ý")
     if st.click:
         d= d.strftime("%x")
