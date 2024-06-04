@@ -96,18 +96,28 @@ with st.form("form2"):
 )
     #col12=st.columns(1)
     #title6=  st.text_input(":red[Đơn vị công tác(*)]", "")
+    paraVAR = ()
+  #query  = "select TOCHUCHOI N'Tổ chức hội',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY TOCHUCHOI"
+    queryVAR  = " SELECT * FROM DONVICONGTAC ORDER BY TENDONVI"
+    dataVAR=cursor.execute(queryVAR,paraVAR).fetchall()
+#     combobox1 = st.selectbox(
+#    ":red[Đơn vị công tác (*)]",
+#    ("Công an tỉnh","Công an TP", "Sở nông nghiệp", "Sở tài chính","Sở tài nguyên môi trường","Sở lao động - Thương binh và xã hội","Sở nông nghiệp và Phát triển nông thôn"
+#         ,"Sở kế hoạch và đầu tư", "Sở tư pháp", "Sở giáo dục và đào tạo","Sở xây dựng","Sở công thương","Sở khoa học và công nghệ",
+#         "Sở ngoại vụ","Sở nội vụ","Sở thông tin và truyền thông","Sở y tế"
+#         "Cục thuế tỉnh", "Cục Thống kê", "Cục thi hành án","Hội chữ thập đỏ","Viễn Thông Viettel","Bảo hiểm xã hội tỉnh","Báo Lạng Sơn","Bộ chỉ huy QS tỉnh"
+#         "Bộ chỉ huy BP tỉnh", "Đảng ủy khối cơ quan"
+#         ,"Khác"
+#     ),
+#    index=None,
+#    placeholder="click để chọn...",
+# )
     combobox1 = st.selectbox(
-   ":red[Đơn vị công tác (*)]",
-   ("Công an tỉnh","Công an TP", "Sở nông nghiệp", "Sở tài chính","Sở tài nguyên môi trường","Sở lao động - Thương binh và xã hội","Sở nông nghiệp và Phát triển nông thôn"
-        ,"Sở kế hoạch và đầu tư", "Sở tư pháp", "Sở giáo dục và đào tạo","Sở xây dựng","Sở công thương","Sở khoa học và công nghệ",
-        "Sở ngoại vụ","Sở nội vụ","Sở thông tin và truyền thông","Sở y tế"
-        "Cục thuế tỉnh", "Cục Thống kê", "Cục thi hành án","Hội chữ thập đỏ","Viễn Thông Viettel","Bảo hiểm xã hội tỉnh","Báo Lạng Sơn","Bộ chỉ huy QS tỉnh"
-        "Bộ chỉ huy BP tỉnh", "Đảng ủy khối cơ quan"
-        ,"Khác"
-    ),
-   index=None,
-   placeholder="click để chọn...",
-)
+     ":red[Đơn vị công tác (*)]",( [item[1] for item in dataVAR]
+       ),
+    index=None,
+    placeholder="click để chọn...",
+    )
     st.write(":red[(*)]  bắt buộc")
     st.click=st.form_submit_button("Đồng ý")
     if st.click:
@@ -187,4 +197,5 @@ if click0:
   #   col1.text_input("Họ và tên")
   #   col2.text_input("Năm sinh")
   #   st.form_submit_button("Đồng ý")
+st.image('bbb.jpg', caption='Sản phẩm tiền gửi')
 cnxn.close()
