@@ -95,14 +95,27 @@ with st.form("form2"):
    placeholder="click để chọn...",
 )
     #col12=st.columns(1)
-    title6=  st.text_input(":red[Đơn vị công tác(*)]", "")
+    #title6=  st.text_input(":red[Đơn vị công tác(*)]", "")
+    combobox1 = st.selectbox(
+   ":red[Đơn vị công tác (*)]",
+   ("Công an tỉnh","Công an TP", "Sở nông nghiệp", "Sở tài chính","Sở tài nguyên môi trường","Sở lao động - Thương binh và xã hội","Sở nông nghiệp và Phát triển nông thôn"
+        ,"Sở kế hoạch và đầu tư", "Sở tư pháp", "Sở giáo dục và đào tạo","Sở xây dựng","Sở công thương","Sở khoa học và công nghệ",
+        "Sở ngoại vụ","Sở nội vụ","Sở thông tin và truyền thông","Sở y tế"
+        "Cục thuế tỉnh", "Cục Thống kê", "Cục thi hành án","Hội chữ thập đỏ","Viễn Thông Viettel","Bảo hiểm xã hội tỉnh","Báo Lạng Sơn","Bộ chỉ huy QS tỉnh"
+        "Bộ chỉ huy BP tỉnh", "Đảng ủy khối cơ quan"
+        ,"Khác"
+    ),
+   index=None,
+   placeholder="click để chọn...",
+)
     st.write(":red[(*)]  bắt buộc")
     st.click=st.form_submit_button("Đồng ý")
     if st.click:
         d= d.strftime("%x")
         d0= d0.strftime("%x")
-        para = (                          title,d,title0,title1,d0,title2,title3,title4,sotien,combobox,title6,combobox0)
-        query=""" insert into lephatdong (HOTEN,NGAYSINH,CMT_CU,CCCD,NGAYCAP,NOICAP,DIACHI,DIENTHOAI,SOTIEN,TOCHUCHOI,DONVI,POS) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)"""
+        d1=today.strftime("%x")
+        para = (                          title,d,title0,title1,d0,title2,title3,title4,sotien,combobox,combobox1,combobox0,d1)
+        query=""" insert into lephatdong (HOTEN,NGAYSINH,CMT_CU,CCCD,NGAYCAP,NOICAP,DIACHI,DIENTHOAI,SOTIEN,TOCHUCHOI,DONVI,POS,NGAYDANGKY) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)"""
             #query  = "exec LEPHATDONG_INSERT @HOTEN=?,@NGAYSINH=?,@CMT_CU=?,@CCCD=?,@NGAYCAP=?,@DIACHI=?,@DIENTHOAI=?,@SOTIEN=?,@TOCHUCHOI=?,@DONVI=?"
         cursor.execute(query,para)
         def clear_text():
