@@ -7,6 +7,7 @@ import time
 import os
 import openai
 import plotly.express as px
+
 db_user = st.secrets["db_credentials"]["user"]
 db_password = st.secrets["db_credentials"]["password"]
 db_host = st.secrets["db_credentials"]["host"]
@@ -42,6 +43,7 @@ div.stButton > button:first-child:hover {
 }
 </style>
 """
+st.image("logo.png", width=100)
 st.header(':orange[Gửi tiền tiết kiệm, chung tay vì người nghèo]', divider='rainbow')
 st.markdown("""
             <style>
