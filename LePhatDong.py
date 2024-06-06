@@ -203,7 +203,7 @@ with st.form("form3",clear_on_submit=True):
 #st.write("check out this [link](%s)" % url)
     st.markdown("fanpage facebook NHCSXH Tỉnh Lạng sơn Lạng Sơn: [click here](%s)" % st.url)
     st.markdown("Xem thêm sản phẩm tiền gửi: [click here](%s)" % st.url1)
-    st.click=st.form_submit_button("Thanks!")
+    st.click=st.form_submit_button("Nếu gặp lỗi trong lúc thao tác, xin bấm vào đây thanks!")
     if st.click:
-            st.markdown("Nếu có lỗi gì liên hệ: 0988.649.666")
+            st.markdown("Thông tin liên hệ: 0988.649.666")
 cnxn.close()
