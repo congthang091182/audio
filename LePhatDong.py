@@ -201,9 +201,12 @@ with st.form("form3",clear_on_submit=True):
     st.url = "https://www.facebook.com/profile.php?id=100083312079198"
     st.url1 = "https://vbsp.org.vn/gioi-thieu/lai-suat-huy-dong.html?"
 #st.write("check out this [link](%s)" % url)
-    st.markdown("fanpage facebook NHCSXH Tỉnh Lạng sơn Lạng Sơn: [click here](%s)" % st.url)
-    st.markdown("Xem thêm sản phẩm tiền gửi: [click here](%s)" % st.url1)
+    #st.markdown("![Alt text](https://www.streamlit.io/images/brand/streamlit-mark-light.png)")
+    st.markdown("[_fanpage chính thức facebook NHCSXH Tỉnh Lạng Sơn_](%s)" % st.url)
+    st.markdown("[_Xem thêm sản phẩm tiền gửi_](%s)" % st.url1)
+    #st.markdown('<i>Văn bản in nghiêng</i>(%s)', unsafe_allow_html=True)
     st.click=st.form_submit_button("Nếu gặp lỗi trong lúc thao tác, xin bấm vào đây thanks!")
+    
     if st.click:
             st.markdown("Thông tin liên hệ: 0988.649.666")
 cnxn.close()
