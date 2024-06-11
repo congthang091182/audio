@@ -150,7 +150,7 @@ st.header(':white[Thống kê số liệu]', divider='rainbow')
 click0=st.button("Xem số lượng khách hàng đã đăng ký")
 if click0:
   colors = ['virginica', 'blue','red', 'green', 'yellow','aqua','azure','azure','beige','black','brown','cyan','darkblue','darkcyan','darkgreen','darkkhaki'
-            ,'darkmagenta','darkolivegreen','darkorchid','darkred','darksalmon','darkviolet','fuchsia','gold','indigo','lightblue','navy']
+            ,'darkmagenta','darkolivegreen','darkorchid','darkred','darksalmon','darkviolet','fuchsia','gold','indigo','lightblue','navy','darkmagenta','darkorange','fuchsia','khaki']
 
   para = ()
   #query  = "select TOCHUCHOI N'Tổ chức hội',COUNT(CCCD) N'Số khách hàng' from LEPHATDONG where HOTEN is not null and TOCHUCHOI is not null GROUP BY TOCHUCHOI"
