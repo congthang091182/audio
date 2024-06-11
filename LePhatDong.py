@@ -7,7 +7,7 @@ import time
 import os
 import openai
 import plotly.express as px
-
+import base64
 db_user = st.secrets["db_credentials"]["user"]
 db_password = st.secrets["db_credentials"]["password"]
 db_host = st.secrets["db_credentials"]["host"]
@@ -44,6 +44,17 @@ div.stButton > button:first-child:hover {
 </style>
 """
 st.image("logo.png", width=100)
+st.title("trailer commingsoon")
+
+# Use st.video to display the video player
+youtube_url = "https://www.youtube.com/watch?v=KuDNWepwVK8"  # Replace with your YouTube video URL
+st.video(youtube_url)
+# with st.form("form0",clear_on_submit=True):
+#     st.image("logo.png", width=100)
+   
+#     st.click=st.form_submit_button("Nếu gặp lỗi trong lúc thao tác, xin bấm vào đây thanks!")
+#     if st.click:
+#         show_pdf(pdf_file)
 st.header(':orange[Gửi tiền tiết kiệm, chung tay vì người nghèo]', divider='rainbow')
 st.markdown("""
             <style>
@@ -200,15 +211,27 @@ if click0:
   #   st.form_submit_button("Đồng ý")
 st.image('bbb.jpg', caption='Sản phẩm tiền gửi')
 with st.form("form3",clear_on_submit=True):
-    st.url = "https://www.facebook.com/profile.php?id=100083312079198"
-    st.url1 = "https://vbsp.org.vn/gioi-thieu/lai-suat-huy-dong.html?"
+    #pdffile= "1.pdf"
+    st.url1 = "https://www.facebook.com/profile.php?id=100083312079198"
+    st.url2 = "https://vbsp.org.vn/gioi-thieu/lai-suat-huy-dong.html?"
+    # def show_pdf(file_path):
+    #     with open(file_path,"rb") as f:
+    #         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+    #     pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="800" height="800" type="application/pdf"></iframe>'
+    #     st.markdown(pdf_display, unsafe_allow_html=True)
 #st.write("check out this [link](%s)" % url)
     #st.markdown("![Alt text](https://www.streamlit.io/images/brand/streamlit-mark-light.png)")
-    st.markdown("[_fanpage chính thức facebook NHCSXH Tỉnh Lạng Sơn_](%s)" % st.url)
-    st.markdown("[_Xem thêm sản phẩm tiền gửi_](%s)" % st.url1)
+    #st.markdown("[_Thử ngỏ_](%s)" % show_pdf(st.url0))
+    #st.click0=st.button("Thư ngỏ")
+    #if click0:
+        
+    st.markdown("[_fanpage chính thức facebook NHCSXH Tỉnh Lạng Sơn_](%s)" % st.url1)
+    st.markdown("[_Xem thêm sản phẩm tiền gửi_](%s)" % st.url2)
     #st.markdown('<i>Văn bản in nghiêng</i>(%s)', unsafe_allow_html=True)
-    st.click=st.form_submit_button("Nếu gặp lỗi trong lúc thao tác, xin bấm vào đây thanks!")
+    #pdf_file = '1.pdf'
     
+    st.click=st.form_submit_button("Nếu gặp lỗi trong lúc thao tác, xin bấm vào đây thanks!")
     if st.click:
             st.markdown("Thông tin liên hệ: 0988.649.666")
+            #show_pdf(pdffile)
 cnxn.close()
