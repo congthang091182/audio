@@ -44,11 +44,11 @@ div.stButton > button:first-child:hover {
 </style>
 """
 st.image("logo.png", width=100)
-st.title("trailer commingsoon")
+#st.title("trailer commingsoon")
 
 # Use st.video to display the video player
-youtube_url = "https://www.youtube.com/watch?v=KuDNWepwVK8"  # Replace with your YouTube video URL
-st.video(youtube_url)
+#youtube_url = "https://www.youtube.com/watch?v=KuDNWepwVK8"  # Replace with your YouTube video URL
+#st.video(youtube_url)
 # with st.form("form0",clear_on_submit=True):
 #     st.image("logo.png", width=100)
    
