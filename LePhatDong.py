@@ -214,6 +214,7 @@ with st.form("form3",clear_on_submit=True):
     #pdffile= "1.pdf"
     st.url1 = "https://www.facebook.com/profile.php?id=100083312079198"
     st.url2 = "https://vbsp.org.vn/gioi-thieu/lai-suat-huy-dong.html?"
+    st.url3 = "https://vbsp.org.vn/gioi-thieu/co-cau-to-chuc/diem-giao-dich-xa-phuong.html"
     # def show_pdf(file_path):
     #     with open(file_path,"rb") as f:
     #         base64_pdf = base64.b64encode(f.read()).decode('utf-8')
@@ -227,6 +228,7 @@ with st.form("form3",clear_on_submit=True):
         
     st.markdown("[_fanpage chính thức facebook NHCSXH Tỉnh Lạng Sơn_](%s)" % st.url1)
     st.markdown("[_Xem thêm sản phẩm tiền gửi_](%s)" % st.url2)
+    st.markdown("[_Tra cứu điểm giao dịch xã_](%s)" % st.url3)
     #st.markdown('<i>Văn bản in nghiêng</i>(%s)', unsafe_allow_html=True)
     #pdf_file = '1.pdf'
     
