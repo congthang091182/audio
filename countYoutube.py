@@ -4,7 +4,10 @@ import pandas as pd
 
 # Đặt API Key của bạn
 API_KEY = 'AIzaSyCUAU2jwAABITKdZuhWH--uIPJUfNByQMY'
+video_url = "https://www.youtube.com/watch?v=YA74YE1bw1k"  #langson ^_^
 
+        # Phát video tự động khi tải trang
+st.video(video_url)
 # Hàm lấy ID video từ một kênh
 def get_channel_uploads(channel_id):
     youtube = build('youtube', 'v3', developerKey=API_KEY)
@@ -68,7 +71,7 @@ def get_video_stats(video_id):
 # Giao diện Streamlit
 st.title("YouTube Channel Video Stats")
 st.title("https://seostudio.tools/vi/youtube-channel-id  <---để lấy ID kênh")
-channel_id = st.text_input("Nhập ID kênh YouTube:", "")
+channel_id = st.text_input("Nhập ID kênh YouTube:", "UCc_pE2B8AkSK-o1SRMZtL7g")
 
 if st.button("Lấy Thống Kê Video"):
     if channel_id:
@@ -85,9 +88,11 @@ if st.button("Lấy Thống Kê Video"):
                     'Video ID': video_id,
                     'Published At': publish_time,
                     'Views': stats['viewCount'],
-                    'Likes': stats['likeCount'],
-                    'Video URL': f'https://www.youtube.com/watch?v={video_id}'  # Thêm link video
+                    'Likes': stats['likeCount']
+                    #,
+                    #'Video URL': f'https://www.youtube.com/watch?v={video_id}'  # Thêm link video
                 })
+# Đường dẫn video bạn muốn phát tự động
 
         # Tạo DataFrame và hiển thị
         if video_stats_list:
@@ -108,10 +113,12 @@ if st.button("Lấy Thống Kê Video"):
             st.write("Xem video:")
                 
                 # Tạo nút play cho từng video
-            for index, row in df.iterrows():
-                    st.write(f"{index}. **{row['Title']}**")
-                    st.video(row['Video URL'])  # Nhúng video
+            #for index, row in df.iterrows():
+                    #st.write(f"{index}. **{row['Title']}**")
+                    #st.video(row['Video URL'])  # Nhúng video
         else:
             st.error("Không tìm thấy video nào trong kênh.")
     else:
         st.warning("Vui lòng nhập ID kênh!")
+        
+        
