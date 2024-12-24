@@ -1,7 +1,8 @@
 streamlit==1.35.0
-pyodbc==4.0.39
+#pyodbc==4.0.39
 #python 3.12.3
-openai              
-plotly                                              
-tournament
+#openai              
+#plotly                                              
+#tournament
 google-api-python-client
+pandas
