@@ -3,3 +3,5 @@ pyodbc==4.0.39
 #python 3.12.3
 openai              
 plotly                                              
+tournament
+google-api-python-client
