@@ -8,16 +8,16 @@ reportlab==4.0.4
 python-dotenv==1.0.0
 uuid==1.30
 
-# Thay thế streamlit-cookies-manager bằng package tương thích
-extra-streamlit-components==0.1.63  # Có chức năng quản lý cookie tương tự
+# Cookie Manager thay thế (phiên bản có sẵn)
+extra-streamlit-components==0.1.71  # Phiên bản mới nhất hiện có
 
 # Database và Windows-specific
-pywin32==305; sys_platform == 'win32'  # Sử dụng 305 thay vì 306
+pywin32==305; sys_platform == 'win32'
 
 # Các phụ thuộc khác
 python-dateutil==2.8.2
 typing-extensions==4.9.0
 tzdata==2023.4; sys_platform == 'win32'
 
-# Font cho ReportLab (tuỳ chọn)
+# Font cho ReportLab
 reportlab-fonts==1.1

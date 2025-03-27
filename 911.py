@@ -6,15 +6,16 @@ import pyodbc
 import plotly.express as px
 import datetime as dt
 from datetime import datetime, timedelta
-from streamlit_cookies_manager import CookieManager
+#from streamlit_cookies_manager import CookieManager
+from extra_streamlit_components import CookieManager
 from openpyxl import load_workbook
 from io import BytesIO
 import os
 import uuid
-from reportlab.lib.pagesizes import A4  # Thay FPDF bằng reportlab
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
+#from reportlab.lib.pagesizes import A4  # Thay FPDF bằng reportlab
+#from reportlab.pdfgen import canvas
+#from reportlab.pdfbase import pdfmetrics
+#from reportlab.pdfbase.ttfonts import TTFont
 import base64  # Để nhúng PDF vào iframe
 
 # Initialize Cookie Manager
@@ -196,59 +197,59 @@ def handle_remember_me(username, remember_me):
         cookies["remember_me"] = "False"
 
 # Hàm tạo PDF từ DataFrame bằng reportlab
-def create_pdf_report(df, report_title, file_date_str):
-    pdf_output = BytesIO()
-    c = canvas.Canvas(pdf_output, pagesize=A4)
+# def create_pdf_report(df, report_title, file_date_str):
+#     pdf_output = BytesIO()
+#     c = canvas.Canvas(pdf_output, pagesize=A4)
     
-    # Đăng ký font Times New Roman hỗ trợ Unicode
-    try:
-        pdfmetrics.registerFont(TTFont("Times", "times.ttf"))
-        c.setFont("Times", 12)
-    except Exception as e:
-        st.error(f"Lỗi khi tải font Times: {e}. Vui lòng kiểm tra file times.ttf trong thư mục.")
-        c.setFont("Helvetica", 12)  # Fallback về Helvetica nếu không có Times
+#     # Đăng ký font Times New Roman hỗ trợ Unicode
+#     try:
+#         pdfmetrics.registerFont(TTFont("Times", "times.ttf"))
+#         c.setFont("Times", 12)
+#     except Exception as e:
+#         st.error(f"Lỗi khi tải font Times: {e}. Vui lòng kiểm tra file times.ttf trong thư mục.")
+#         c.setFont("Helvetica", 12)  # Fallback về Helvetica nếu không có Times
     
     # Kích thước trang
-    width, height = A4
-    margin = 50
-    col_width = 100  # Độ rộng mỗi cột
-    row_height = 20   # Chiều cao mỗi dòng
+    # width, height = A4
+    # margin = 50
+    # col_width = 100  # Độ rộng mỗi cột
+    # row_height = 20   # Chiều cao mỗi dòng
     
-    # Tiêu đề
-    c.setFont("Times" if "Times" in pdfmetrics.getRegisteredFontNames() else "Helvetica", 16)
-    c.drawCentredString(width / 2, height - margin, report_title)
-    c.setFont("Times" if "Times" in pdfmetrics.getRegisteredFontNames() else "Helvetica", 12)
-    c.drawCentredString(width / 2, height - margin - 20, f"Ngày báo cáo: {file_date_str}")
+    # # Tiêu đề
+    # c.setFont("Times" if "Times" in pdfmetrics.getRegisteredFontNames() else "Helvetica", 16)
+    # c.drawCentredString(width / 2, height - margin, report_title)
+    # c.setFont("Times" if "Times" in pdfmetrics.getRegisteredFontNames() else "Helvetica", 12)
+    # c.drawCentredString(width / 2, height - margin - 20, f"Ngày báo cáo: {file_date_str}")
     
-    # Vị trí bắt đầu bảng
-    y = height - margin - 60
+    # # Vị trí bắt đầu bảng
+    # y = height - margin - 60
     
-    # Tiêu đề cột
-    for i, col in enumerate(df.columns):
-        c.drawString(margin + i * col_width, y, str(col))
-    y -= row_height
-    c.line(margin, y + 5, margin + len(df.columns) * col_width, y + 5)  # Đường kẻ ngang
+    # # Tiêu đề cột
+    # for i, col in enumerate(df.columns):
+    #     c.drawString(margin + i * col_width, y, str(col))
+    # y -= row_height
+    # c.line(margin, y + 5, margin + len(df.columns) * col_width, y + 5)  # Đường kẻ ngang
     
-    # Dữ liệu
-    for index, row in df.iterrows():
-        for i, item in enumerate(row):
-            item_str = str(item)[:20]  # Giới hạn độ dài để tránh tràn
-            c.drawString(margin + i * col_width, y, item_str)
-        y -= row_height
-        if y < margin:  # Nếu hết trang, tạo trang mới
-            c.showPage()
-            c.setFont("Times" if "Times" in pdfmetrics.getRegisteredFontNames() else "Helvetica", 12)
-            y = height - margin
-            for i, col in enumerate(df.columns):
-                c.drawString(margin + i * col_width, y, str(col))
-            y -= row_height
-            c.line(margin, y + 5, margin + len(df.columns) * col_width, y + 5)
+    # # Dữ liệu
+    # for index, row in df.iterrows():
+    #     for i, item in enumerate(row):
+    #         item_str = str(item)[:20]  # Giới hạn độ dài để tránh tràn
+    #         c.drawString(margin + i * col_width, y, item_str)
+    #     y -= row_height
+    #     if y < margin:  # Nếu hết trang, tạo trang mới
+    #         c.showPage()
+    #         c.setFont("Times" if "Times" in pdfmetrics.getRegisteredFontNames() else "Helvetica", 12)
+    #         y = height - margin
+    #         for i, col in enumerate(df.columns):
+    #             c.drawString(margin + i * col_width, y, str(col))
+    #         y -= row_height
+    #         c.line(margin, y + 5, margin + len(df.columns) * col_width, y + 5)
     
-    # Hoàn thành PDF
-    c.showPage()
-    c.save()
-    pdf_output.seek(0)
-    return pdf_output
+    # # Hoàn thành PDF
+    # c.showPage()
+    # c.save()
+    # pdf_output.seek(0)
+    # return pdf_output
 
 # Hàm hiển thị PDF trong iframe
 def display_pdf(pdf_file):
@@ -319,20 +320,20 @@ def home_page():
                             st.dataframe(df, use_container_width=True)
                             
                             # Tạo PDF
-                            pdf_file = create_pdf_report(df, "Điện báo hàng ngày", file_date_str)
+                            #pdf_file = create_pdf_report(df, "Điện báo hàng ngày", file_date_str)
                             
                             # Hiển thị PDF trong iframe
                             #st.subheader("Xem trước báo cáo PDF")
                             #display_pdf(pdf_file)
                             
                             # Nút "Tải xuống PDF"
-                            st.download_button(
-                                label="Tải xuống PDF",
-                                data=pdf_file,
-                                file_name=f"Dienbaohangngay_{file_date_str}.pdf",
-                                mime="application/pdf",
-                                key="download_pdf_dienbao"
-                            )
+                            # st.download_button(
+                            #     label="Tải xuống PDF",
+                            #     data=pdf_file,
+                            #     file_name=f"Dienbaohangngay_{file_date_str}.pdf",
+                            #     mime="application/pdf",
+                            #     key="download_pdf_dienbao"
+                            # )
                             
                             # Tùy chọn xuất Excel
                             query_page1 = "exec get_THA_SAVE_DIENBAO_xls @NGAYBC=?"
@@ -371,20 +372,20 @@ def home_page():
                             st.write(df_selection)
                             
                             # Tạo PDF
-                            pdf_file = create_pdf_report(df_selection, "BC kết quả cho vay các chương trình tín dụng", file_date_str)
+                            #pdf_file = create_pdf_report(df_selection, "BC kết quả cho vay các chương trình tín dụng", file_date_str)
                             
                             # Hiển thị PDF trong iframe
                             #st.subheader("Xem trước báo cáo PDF")
                             #display_pdf(pdf_file)
                             
                             # Nút "Tải xuống PDF"
-                            st.download_button(
-                                label="Tải xuống PDF",
-                                data=pdf_file,
-                                file_name=f"Bao_cao_hongheo_dtcs_{file_date_str}.pdf",
-                                mime="application/pdf",
-                                key="download_pdf_hscv"
-                            )
+                            # st.download_button(
+                            #     label="Tải xuống PDF",
+                            #     data=pdf_file,
+                            #     file_name=f"Bao_cao_hongheo_dtcs_{file_date_str}.pdf",
+                            #     mime="application/pdf",
+                            #     key="download_pdf_hscv"
+                            # )
                             
                             left_colum, right_colum = st.columns(2)
                             with left_colum:  
@@ -430,20 +431,20 @@ def home_page():
                             st.write(df_selection)
                             
                             # Tạo PDF
-                            pdf_file = create_pdf_report(df_selection, "BC đơn vị ủy thác", file_date_str)
+                            #pdf_file = create_pdf_report(df_selection, "BC đơn vị ủy thác", file_date_str)
                             
                             # Hiển thị PDF trong iframe
                             #st.subheader("Xem trước báo cáo PDF")
                             #display_pdf(pdf_file)
                             
                             # Nút "Tải xuống PDF"
-                            st.download_button(
-                                label="Tải xuống PDF",
-                                data=pdf_file,
-                                file_name=f"Bao_cao_theo_DVUT_{file_date_str}.pdf",
-                                mime="application/pdf",
-                                key="download_pdf_dvut"
-                            )
+                            # st.download_button(
+                            #     label="Tải xuống PDF",
+                            #     data=pdf_file,
+                            #     file_name=f"Bao_cao_theo_DVUT_{file_date_str}.pdf",
+                            #     mime="application/pdf",
+                            #     key="download_pdf_dvut"
+                            # )
                             
                             left_colum, right_colum = st.columns(2)
                             with left_colum:  
