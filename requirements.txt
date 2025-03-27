@@ -1,8 +1,19 @@
-streamlit==1.35.0
+streamlit==1.38.0
 #pyodbc==4.0.39
-#python 3.12.3
-#openai              
-#plotly                                              
+python 3.12.3
+openai              
+plotly                                              
 #tournament
 google-api-python-client
 pandas
+pyodbc
+datetime
+streamlit_cookies_manager
+openpyxl
+io
+reportlab
+reportlab.lib.pagesizes
+reportlab.pdfgen
+reportlab.pdfbase
+reportlab.pdfbase.ttfonts
+base64
