@@ -4,20 +4,24 @@ from openpyxl import load_workbook
 import os
 
 def export_pos_to_DVUT_excel(df, template_file_path, output_file_path="output_pos_data_fixed.xlsx"):
-    # """
-    # Xuất dữ liệu POS từ DataFrame ra file Excel với các sheet riêng cho từng POS.
+    """
+    Xuất dữ liệu POS từ DataFrame ra file Excel với các sheet riêng cho từng POS.
     
-    # Parameters:
-    # - df (pd.DataFrame): DataFrame chứa dữ liệu với các cột 'POS', 'TENPGD', 'DUNO'.
-    # - template_file_path (str): Đường dẫn đến file mẫu Excel.
-    # - output_file_path (str): Đường dẫn đến file Excel kết quả.
+    Parameters:
+    - df (pd.DataFrame): DataFrame chứa dữ liệu với các cột 'POS', 'DVUT', 'TENDV'.
+    - template_file_path (str): Đường dẫn đến file mẫu Excel.
+    - output_file_path (str): Đường dẫn đến file Excel kết quả.
     
-    # Returns:
-    # - str: Đường dẫn đến file kết quả nếu thành công, None nếu thất bại.
-    # """
-    required_columns = ['POS','DVUT','TENDV']
+    Returns:
+    - str: Đường dẫn đến file kết quả nếu thành công, None nếu thất bại.
+    """
+    if df.empty:
+        st.warning("DataFrame rỗng, không có dữ liệu để xuất Excel.")
+        return None
+
+    required_columns = ['POS', 'DVUT', 'TENDV']
     if not all(col in df.columns for col in required_columns):
-        st.error("Dữ liệu cần có các cột:  POS,DVUT,TENDV")
+        st.error("Dữ liệu cần có các cột: POS, DVUT, TENDV")
         return None
 
     # Kiểm tra file mẫu tồn tại
@@ -32,13 +36,23 @@ def export_pos_to_DVUT_excel(df, template_file_path, output_file_path="output_po
         st.error(f"Không thể đọc file mẫu: {e}")
         return None
     
+    # Chuẩn hóa dữ liệu trước khi ghi
+    df_cleaned = df.copy()
+    string_columns = ['POS', 'DVUT', 'TENDV']
+    for col in df_cleaned.columns:
+        if col in string_columns:
+            df_cleaned[col] = df_cleaned[col].astype(str).str.strip()
+        else:
+            if not df_cleaned[col].empty and df_cleaned[col].notna().any():
+                df_cleaned[col] = pd.to_numeric(df_cleaned[col], errors='coerce')
+
     template_sheet = wb[wb.sheetnames[0]]
     original_template_name = wb.sheetnames[0]
     
-    pos_list = df['POS'].unique()
+    pos_list = df_cleaned['POS'].unique()
     
     for idx, pos in enumerate(pos_list):
-        pos_data = df[df['POS'] == pos]
+        pos_data = df_cleaned[df_cleaned['POS'] == pos]
         sheet_name = str(pos)[:31]
         
         if sheet_name in wb.sheetnames:
@@ -57,28 +71,26 @@ def export_pos_to_DVUT_excel(df, template_file_path, output_file_path="output_po
         for row_idx, row in enumerate(pos_data.itertuples(), start=15):
             new_sheet[f'A{row_idx}'] = row.DVUT
             new_sheet[f'B{row_idx}'] = row.TENDV
-            new_sheet[f'C{row_idx}'] = row.SH_CHOVAY
-            new_sheet[f'D{row_idx}'] = row.CHOVAY
-            new_sheet[f'E{row_idx}'] = row.LK_CHOVAY
-            new_sheet[f'F{row_idx}'] = row.THUNO
-            new_sheet[f'G{row_idx}'] = row.LK_THUNO
-            new_sheet[f'H{row_idx}'] = row.SOTO_DUNO
-            new_sheet[f'I{row_idx}'] = row.SH_DUNO
-            new_sheet[f'J{row_idx}'] = row.DUNO
-            new_sheet[f'K{row_idx}'] = row.SH_QHAN
-            new_sheet[f'L{row_idx}'] = row.QHAN
-            new_sheet[f'M{row_idx}'] = row.TL_NQH
-            new_sheet[f'N{row_idx}'] = row.TG_QHAN
-            new_sheet[f'O{row_idx}'] = row.KHOANH
-            new_sheet[f'P{row_idx}'] = row.LKSH_CHOVAY
-            new_sheet[f'Q{row_idx}'] = row.TG_DUNO
-            new_sheet[f'R{row_idx}'] = row.TYLE
-            new_sheet[f'S{row_idx}'] = row.TEN
-            new_sheet[f'T{row_idx}'] = row.NGAYBC
-            new_sheet[f'U{row_idx}'] = row.TENPGD
+            new_sheet[f'C{row_idx}'] = row.SH_CHOVAY if hasattr(row, 'SH_CHOVAY') else None
+            new_sheet[f'D{row_idx}'] = row.CHOVAY if hasattr(row, 'CHOVAY') else None
+            new_sheet[f'E{row_idx}'] = row.LK_CHOVAY if hasattr(row, 'LK_CHOVAY') else None
+            new_sheet[f'F{row_idx}'] = row.THUNO if hasattr(row, 'THUNO') else None
+            new_sheet[f'G{row_idx}'] = row.LK_THUNO if hasattr(row, 'LK_THUNO') else None
+            new_sheet[f'H{row_idx}'] = row.SOTO_DUNO if hasattr(row, 'SOTO_DUNO') else None
+            new_sheet[f'I{row_idx}'] = row.SH_DUNO if hasattr(row, 'SH_DUNO') else None
+            new_sheet[f'J{row_idx}'] = row.DUNO if hasattr(row, 'DUNO') else None
+            new_sheet[f'K{row_idx}'] = row.SH_QHAN if hasattr(row, 'SH_QHAN') else None
+            new_sheet[f'L{row_idx}'] = row.QHAN if hasattr(row, 'QHAN') else None
+            new_sheet[f'M{row_idx}'] = row.TL_NQH if hasattr(row, 'TL_NQH') else None
+            new_sheet[f'N{row_idx}'] = row.TG_QHAN if hasattr(row, 'TG_QHAN') else None
+            new_sheet[f'O{row_idx}'] = row.KHOANH if hasattr(row, 'KHOANH') else None
+            new_sheet[f'P{row_idx}'] = row.LKSH_CHOVAY if hasattr(row, 'LKSH_CHOVAY') else None
+            new_sheet[f'Q{row_idx}'] = row.TG_DUNO if hasattr(row, 'TG_DUNO') else None
+            new_sheet[f'R{row_idx}'] = row.TYLE if hasattr(row, 'TYLE') else None
+            new_sheet[f'S{row_idx}'] = row.TEN if hasattr(row, 'TEN') else None
+            new_sheet[f'T{row_idx}'] = row.NGAYBC if hasattr(row, 'NGAYBC') else None
+            new_sheet[f'U{row_idx}'] = row.TENPGD if hasattr(row, 'TENPGD') else None
             new_sheet[f'V{row_idx}'] = row.POS
-        
-        #new_sheet.freeze_panes = 'B2'
     
     if len(pos_list) > 1 and original_template_name in wb.sheetnames:
         wb.remove(wb[original_template_name])
@@ -96,47 +108,3 @@ def export_pos_to_DVUT_excel(df, template_file_path, output_file_path="output_po
     except Exception as e:
         st.error(f"Lỗi khi lưu file: {e}")
         return None
-
-# Giao diện Streamlit
-#st.title("Xuất dữ liệu POS ra Excel với cố định dòng cột")
-
-# Định nghĩa DataFrame trực tiếp
-data = {
-    'POS': [2201, 2201, 2201, 2202, 2202, 2202],
-    'TENPGD': ['Thành phố', 'Thành phố', 'Thành phố', 'Cao Lộc', 'Cao Lộc', 'Cao Lộc'],
-    'DUNO': [238.0, 924.0, 170897.0, 37742.0, 1665.0, 123145.0]
-}
-df = pd.DataFrame(data)
-
-# Đường dẫn file mẫu
-TEMPLATE_FILE_PATH = "template.xlsx"  # Thay bằng đường dẫn thực tế
-
-# Tùy chọn tên file đầu ra
-output_file_name = st.text_input("Tên file đầu ra", value="test_export_24_02_2025.xlsx")
-
-# Nút bắt đầu ghi dữ liệu
-if st.button("Bắt đầu ghi dữ liệu"):
-    with st.spinner("Đang xử lý..."):
-        output_file = export_pos_to_DVUT_excel(df, TEMPLATE_FILE_PATH, output_file_name)
-        if output_file:
-            try:
-                with open(output_file, "rb") as file:
-                    st.download_button(
-                        label="Tải file Excel kết quả",
-                        data=file,
-                        file_name=os.path.basename(output_file),
-                        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    )
-                st.success("Xuất dữ liệu thành công với dòng cột đã cố định!")
-            except Exception as e:
-                st.error(f"Không thể mở file để tải: {e}")
-        else:
-            st.warning("Không tạo được file đầu ra, kiểm tra thông báo lỗi ở trên.")
-
-        st.markdown("""
-        ### Hướng dẫn:
-        1. Đảm bảo file mẫu (`template.xlsx`) đã được đặt đúng đường dẫn.
-        2. Nhập tên file đầu ra (nếu muốn thay đổi).
-        3. Nhấn nút "Bắt đầu ghi dữ liệu" để xử lý.
-        4. Tải file kết quả bằng nút "Tải file Excel kết quả" sau khi xử lý xong.
-        """)
