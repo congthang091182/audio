@@ -420,7 +420,7 @@ def home_page():
                             with left_colum:  
                                 if st.button("Xuất báo cáo Excel", key="export_dienbao_hscv"):
                                     #template_path = 'FILE_MAU/BC_HONGHEO_DTCS.XLSX'
-                                    template_path = 'BC_HONGHEO_DTCS.XLSX'
+                                    template_path = 'BC_HONGHEO_DTCS.xlsx'
                                     output_file = f"Bao_cao_hongheo_dtcs_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
@@ -436,7 +436,7 @@ def home_page():
                                         st.error(f"Lỗi khi tạo file Excel: {e}")
                             with right_colum:
                                 if st.button("Xuất báo cáo Excel (Tất cả POS)"):
-                                    template_path = 'BC_HONGHEO_DTCS.XLSX'
+                                    template_path = 'BC_HONGHEO_DTCS.xlsx'
                                     output_file = f"Bao_cao_hongheo_dtcs_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
@@ -480,7 +480,7 @@ def home_page():
                             with left_colum:  
                                 if st.button("Xuất báo cáo Excel", key="export_dienbao_dvut"):
                                     #template_path = 'FILE_MAU/BC_TOCHUCHOI_M01.XLSX'
-                                    template_path = 'BC_TOCHUCHOI_M01.XLSX'
+                                    template_path = 'BC_TOCHUCHOI_M01.xlsx'
                                     output_file = f"Bao_cao_theo_DVUT_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
@@ -497,7 +497,7 @@ def home_page():
                             with right_colum:
                                 if st.button("Xuất báo cáo Excel (Tất cả POS)"):
                                     #template_path = 'FILE_MAU/BC_TOCHUCHOI_M01.XLSX'
-                                    template_path = 'BC_TOCHUCHOI_M01.XLSX'
+                                    template_path = 'BC_TOCHUCHOI_M01.xlsx'
                                     output_file = f"Bao_cao_theo_DVUT_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
