@@ -19,7 +19,35 @@ import uuid
 import base64  # Để nhúng PDF vào iframe
 
 # Initialize Cookie Manager
-cookies = CookieManager()
+try:
+    cookies = CookieManager()
+    # Kiểm tra phiên bản để xác định cách gọi get()
+    import extra_streamlit_components
+    if hasattr(extra_streamlit_components, '__version__'):
+        # Phiên bản mới (>=0.1.60)
+        remembered_user = cookies.get(key="remembered_user", default="")
+        remember_me_flag = cookies.get(key="remember_me", default="False") == "True"
+    else:
+        # Phiên bản cũ
+        remembered_user = cookies.get("remembered_user") or ""
+        remember_me_flag = cookies.get("remember_me") == "True"
+except Exception as e:
+    st.warning(f"Không thể khởi tạo CookieManager: {e}")
+    
+    # Fallback implementation
+    class LocalCookieManager:
+        def __init__(self):
+            self.cookies = {}
+        
+        def get(self, key, default=None):
+            return self.cookies.get(key, default)
+        
+        def __setitem__(self, key, value):
+            self.cookies[key] = value
+    
+    cookies = LocalCookieManager()
+    remembered_user = ""
+    remember_me_flag = False
 
 # Import your custom functions
 from def_N_fileXLS import write_to_excel_template9
@@ -529,8 +557,13 @@ def login_page():
     
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        remembered_user = cookies.get("remembered_user") or ""
-        remember_me_flag = cookies.get("remember_me", "False") == "True"
+        try:
+            # Sử dụng cách gọi phù hợp với phiên bản mới
+            remembered_user = cookies.get(key="remembered_user", default="")
+            remember_me_flag = cookies.get(key="remember_me", default="False") == "True"
+        except:
+            remembered_user = ""
+            remember_me_flag = False
         
         with st.form("login_form"):
             username = st.text_input("Tên đăng nhập", value=remembered_user, key="login_username")
@@ -545,7 +578,16 @@ def login_page():
                 st.session_state.show_new_password_form = True
                 st.rerun()
             elif login_result:
-                handle_remember_me(username, remember_me)
+                try:
+                    if remember_me:
+                        cookies["remembered_user"] = username
+                        cookies["remember_me"] = "True"
+                    else:
+                        cookies["remembered_user"] = ""
+                        cookies["remember_me"] = "False"
+                except:
+                    pass
+                
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.success("Đăng nhập thành công!")
