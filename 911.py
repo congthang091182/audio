@@ -378,7 +378,7 @@ def home_page():
                             data_xls6 = pd.read_sql(query_page6, cnxn, params=[date])
                             if st.button("Xuất báo cáo Excel", key="export_dienbao"):
                                 #template_path = 'FILE_MAU/Dien_bao_trang_01.XLSX'
-                                template_path = 'Dien_bao_trang_01.XLSX'
+                                template_path = 'audio/Dien_bao_trang_01.xlsx'
                                 output_file = f"Dienbaohangngay_{file_date_str}.xlsx"
                                 try:
                                     write_to_excel_template9(template_path, data_xls, data_xls2, data_xls3, data_xls4, data_xls5, data_xls6, 15, 2, output_file)
