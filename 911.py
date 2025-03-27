@@ -529,7 +529,7 @@ def login_page():
     
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        remembered_user = cookies.get("remembered_user", "")
+        remembered_user = cookies.get("remembered_user") or ""
         remember_me_flag = cookies.get("remember_me", "False") == "True"
         
         with st.form("login_form"):
