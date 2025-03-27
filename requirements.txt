@@ -6,16 +6,18 @@ plotly==5.18.0
 openpyxl==3.1.2
 reportlab==4.0.4
 python-dotenv==1.0.0
-streamlit-cookies-manager==0.2.2
 uuid==1.30
 
-# Database and PDF
-#pywin32==306; sys_platform == 'win32'
-pywin32==305; sys_platform == 'win32'
-# Additional dependencies
+# Thay thế streamlit-cookies-manager bằng package tương thích
+extra-streamlit-components==0.1.63  # Có chức năng quản lý cookie tương tự
+
+# Database và Windows-specific
+pywin32==305; sys_platform == 'win32'  # Sử dụng 305 thay vì 306
+
+# Các phụ thuộc khác
 python-dateutil==2.8.2
 typing-extensions==4.9.0
 tzdata==2023.4; sys_platform == 'win32'
 
-# Backward compatibility
-importlib-metadata==6.11.0; python_version < '3.8'
+# Font cho ReportLab (tuỳ chọn)
+reportlab-fonts==1.1
