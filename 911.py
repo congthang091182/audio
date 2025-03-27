@@ -377,7 +377,8 @@ def home_page():
                             query_page6 = "exec get_THA_SAVE_DIENBAO_PAGE6 @NGAYBC=?"
                             data_xls6 = pd.read_sql(query_page6, cnxn, params=[date])
                             if st.button("Xuất báo cáo Excel", key="export_dienbao"):
-                                template_path = 'FILE_MAU/Dien_bao_trang_01.XLSX'
+                                #template_path = 'FILE_MAU/Dien_bao_trang_01.XLSX'
+                                template_path = 'Dien_bao_trang_01.XLSX'
                                 output_file = f"Dienbaohangngay_{file_date_str}.xlsx"
                                 try:
                                     write_to_excel_template9(template_path, data_xls, data_xls2, data_xls3, data_xls4, data_xls5, data_xls6, 15, 2, output_file)
@@ -418,7 +419,8 @@ def home_page():
                             left_colum, right_colum = st.columns(2)
                             with left_colum:  
                                 if st.button("Xuất báo cáo Excel", key="export_dienbao_hscv"):
-                                    template_path = 'FILE_MAU/BC_HONGHEO_DTCS.XLSX'
+                                    #template_path = 'FILE_MAU/BC_HONGHEO_DTCS.XLSX'
+                                    template_path = 'BC_HONGHEO_DTCS.XLSX'
                                     output_file = f"Bao_cao_hongheo_dtcs_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
@@ -434,7 +436,7 @@ def home_page():
                                         st.error(f"Lỗi khi tạo file Excel: {e}")
                             with right_colum:
                                 if st.button("Xuất báo cáo Excel (Tất cả POS)"):
-                                    template_path = 'FILE_MAU/BC_HONGHEO_DTCS.XLSX'
+                                    template_path = 'BC_HONGHEO_DTCS.XLSX'
                                     output_file = f"Bao_cao_hongheo_dtcs_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
@@ -477,7 +479,8 @@ def home_page():
                             left_colum, right_colum = st.columns(2)
                             with left_colum:  
                                 if st.button("Xuất báo cáo Excel", key="export_dienbao_dvut"):
-                                    template_path = 'FILE_MAU/BC_TOCHUCHOI_M01.XLSX'
+                                    #template_path = 'FILE_MAU/BC_TOCHUCHOI_M01.XLSX'
+                                    template_path = 'BC_TOCHUCHOI_M01.XLSX'
                                     output_file = f"Bao_cao_theo_DVUT_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
@@ -493,7 +496,8 @@ def home_page():
                                         st.error(f"Lỗi khi tạo file Excel: {e}")
                             with right_colum:
                                 if st.button("Xuất báo cáo Excel (Tất cả POS)"):
-                                    template_path = 'FILE_MAU/BC_TOCHUCHOI_M01.XLSX'
+                                    #template_path = 'FILE_MAU/BC_TOCHUCHOI_M01.XLSX'
+                                    template_path = 'BC_TOCHUCHOI_M01.XLSX'
                                     output_file = f"Bao_cao_theo_DVUT_{file_date_str}.xlsx"
                                     try:
                                         startrow = 15
