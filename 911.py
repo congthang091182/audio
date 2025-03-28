@@ -459,13 +459,16 @@ def home_page():
             st.subheader("Tổng quan")
             
             # Nhóm 1: Cho vay và Thu nợ
-            col1, col2 = st.columns(2)
+            col1, col2,col3,col4,col5 = st.columns(5)
             metrics_group1 = [
                 ("Cho vay", "CHOVAY", "#32CD32"),  # Xanh lá
-                ("Thu nợ", "THUNO", "#87CEEB")     # Xanh nhạt
+                ("Thu nợ", "THUNO", "#87CEEB") ,    # Xanh nhạt
+                ("Tăng giảm Dư nợ", "TG_DUNO", "#5f9ea0") ,    # Xanh nhạt
+                ("Tăng giảm NQH", "TG_QHAN", "#008b8b") ,    # Xanh nhạt
+                ("Tăng giảm Kkhoanh", "TG_KHOANH", "#bdb76b")     # Xanh nhạt
             ]
             for i, (label, column, color) in enumerate(metrics_group1):
-                with [col1, col2][i]:
+                with [col1, col2,col3,col4,col5][i]:
                     if column in df.columns:
                         total_value = df[column].sum()
                         st.markdown(
@@ -479,7 +482,7 @@ def home_page():
                         )
             
             # Nhóm 2: Kế hoạch, Dư nợ, Còn phải thực hiện, Tỷ lệ hoàn thành
-            col3, col4, col5, col6 = st.columns(4)
+            col6, col7, col8, col9 = st.columns(4)
             metrics_group2 = [
                 ("Kế hoạch", "TONG_KH", "#2E86C1"),        # Xanh dương đậm
                 ("Dư nợ", "DUNO", "#4682B4"),             # Xanh dương trung
@@ -487,7 +490,7 @@ def home_page():
                 ("Tỷ lệ hoàn thành", "TYLE", "#FFD700")      # Vàng
             ]
             for i, (label, column, color) in enumerate(metrics_group2):
-                with [col3, col4, col5, col6][i]:
+                with [col6, col7, col8, col9][i]:
                     if column in df.columns:
                         if column == "TYLE":
                             total_value = df[column].mean()
@@ -506,13 +509,13 @@ def home_page():
                         )
             
             # Nhóm 3: Nợ quá hạn và Nợ khoanh
-            col7, col8 = st.columns(2)
+            col10, col11 = st.columns(2)
             metrics_group3 = [
                 ("Nợ quá hạn", "QHAN", "#FF6347", "highlight-overdue"),  # Đỏ
                 ("Nợ khoanh", "KHOANH", "#FFA500")                    # Cam
             ]
             for i, (label, column, color, *extra_class) in enumerate(metrics_group3):
-                with [col7, col8][i]:
+                with [col10, col11][i]:
                     if column in df.columns:
                         total_value = df[column].sum()
                         class_name = "metric-card " + (extra_class[0] if extra_class else "")
