@@ -12,6 +12,7 @@ import os
 import uuid
 import base64
 import time
+import bcrypt  # Thêm import bcrypt
 # Custom functions import
 from def_N_fileXLS import write_to_excel_template9
 from def_One_filexls import write_to_excel_template_one
@@ -94,26 +95,34 @@ def check_login(username, password):
         return False
     
     with engine.connect() as conn:
-        trangthai = 'A'  # Trạng thái mong muốn
         result = conn.execute(
-            sa.text("exec get_web_login @username=:username, @password=:password, @trangthai=:trangthai"),
-            {"username": username, "password": password, "trangthai": trangthai}
+            sa.text("SELECT macb, matkhau, TRANGTHAI FROM loggin WHERE macb = :username"),
+            {"username": username}
         ).fetchone()
         
         if not result:
-            # Nếu không có kết quả, tài khoản hoặc mật khẩu sai
-            st.error("Tên đăng nhập hoặc mật khẩu không đúng!")
+            st.error("Tên đăng nhập không tồn tại!")
             time.sleep(5)
             return False
         
-        # Kiểm tra trạng thái từ cột thứ 3 (index 2)
-        returned_trangthai = str(result[2])  # Cột TRANGTHAI (sau macb và matkhau)
-        if returned_trangthai != 'A':
+        stored_username, stored_hash, trangthai = result
+        
+        # Kiểm tra mật khẩu bằng bcrypt
+        try:
+            if not bcrypt.checkpw(password.encode('utf-8'), stored_hash):  # Bỏ .encode('utf-8') khỏi stored_hash
+                st.error("Mật khẩu không đúng!")
+                time.sleep(5)
+                return False
+        except ValueError as e:
+            st.error(f"Lỗi kiểm tra mật khẩu: {e}")
+            time.sleep(5)
+            return False
+        
+        if trangthai != 'A':
             st.error("Tài khoản chưa được cấp quyền đăng nhập!")
             time.sleep(5)
             return False
         
-        # Nếu tài khoản hợp lệ và trạng thái là 'A', kiểm tra LoginHistory
         login_count = conn.execute(
             sa.text("SELECT COUNT(*) FROM LoginHistory WHERE Username = :username"),
             {"username": username}
@@ -122,14 +131,13 @@ def check_login(username, password):
         if login_count == 0:
             return None
         
-        # Ghi lịch sử đăng nhập
         session_id = str(uuid.uuid4())
         conn.execute(
             sa.text("INSERT INTO LoginHistory (Username, LoginTime, SessionID) VALUES (:username, GETDATE(), :session_id)"),
             {"username": username, "session_id": session_id}
         )
         conn.commit()
-        #time.sleep(5)
+        
         return True
 
 def get_login_count():

@@ -1,6 +1,7 @@
 import streamlit as st
 import pyodbc
 import time
+import bcrypt  # Thêm import bcrypt
 
 def connect_to_sql_server():
     """Kết nối đến SQL Server sử dụng thông tin xác thực từ secrets"""
@@ -31,7 +32,6 @@ def connect_to_sql_server():
         return None
 
 def check_old_password(username, old_password):
-    """Kiểm tra mật khẩu cũ của người dùng"""
     conn = connect_to_sql_server()
     if not conn:
         return False
@@ -43,18 +43,16 @@ def check_old_password(username, old_password):
         result = cursor.fetchone()
         
         if result:
-            stored_password = result[0].strip()
-            input_password = old_password.strip()
-            if stored_password == input_password:
-                return True
-            else:
-                st.error("Mật khẩu cũ không khớp với dữ liệu trong cơ sở dữ liệu!")
-                return False
+            stored_hash = result[0]  # Giá trị băm là bytes
+            return bcrypt.checkpw(old_password.encode('utf-8'), stored_hash)  # Chỉ encode old_password
         else:
             st.error("Không tìm thấy người dùng trong cơ sở dữ liệu!")
             return False
     except pyodbc.Error as e:
         st.error(f"Lỗi truy vấn database: {e}")
+        return False
+    except ValueError as ve:
+        st.error(f"Lỗi khi kiểm tra mật khẩu: {ve}")
         return False
     finally:
         conn.close()
@@ -67,18 +65,12 @@ def update_password(username, new_password):
         
     try:
         cursor = conn.cursor()
+        # Băm mật khẩu mới bằng bcrypt
+        hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
         query = "UPDATE loggin SET matkhau = ? WHERE macb = ?"
-        cursor.execute(query, (new_password, username))
+        cursor.execute(query, (hashed_password, username))
         cursor.execute("SELECT @@ROWCOUNT")
         rows_affected = cursor.fetchone()[0]
-        #if user: insert de coi nhu la duoc chap nhan log in, để lsau k phải đăng doi mk
-        session_id = "test"
-        cursor.execute(
-                "INSERT INTO LoginHistory (Username, LoginTime, SessionID) VALUES (?, GETDATE(), ?)",
-                (username, session_id)
-            )
-           # cnxn.commit()
-        ###
         conn.commit()
         return rows_affected > 0
     except pyodbc.Error as e:
@@ -112,8 +104,7 @@ def change_password_form(username):
             st.error("Mật khẩu mới phải có ít nhất 6 ký tự!")
         elif update_password(username, new_password):
             st.success("Đổi mật khẩu thành công! Bạn sẽ được đăng xuất ngay bây giờ.")
-            time.sleep(2)  # Đợi 2 giây để người dùng thấy thông báo
-            # Đặt lại tất cả trạng thái để quay về màn hình đăng nhập
+            time.sleep(2)
             st.session_state.logged_in = False
             st.session_state.show_change_password = False
             st.session_state.show_new_password_form = False
