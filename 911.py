@@ -465,7 +465,7 @@ def home_page():
                 ("Thu nợ", "THUNO", "#87CEEB") ,    # Xanh nhạt
                 ("Tăng giảm Dư nợ", "TG_DUNO", "#5f9ea0") ,    # Xanh nhạt
                 ("Tăng giảm NQH", "TG_QHAN", "#008b8b") ,    # Xanh nhạt
-                ("Tăng giảm Kkhoanh", "TG_KHOANH", "#bdb76b")     # Xanh nhạt
+                ("Tăng giảm khoanh", "TG_KHOANH", "#bdb76b")     # Xanh nhạt
             ]
             for i, (label, column, color) in enumerate(metrics_group1):
                 with [col1, col2,col3,col4,col5][i]:
@@ -507,15 +507,16 @@ def home_page():
                             """,
                             unsafe_allow_html=True
                         )
-            
-            # Nhóm 3: Nợ quá hạn và Nợ khoanh
-            col10, col11 = st.columns(2)
+            #Nhóm 3: chỉ thị 40
+            col10, col11, col12, col13 = st.columns(4)
             metrics_group3 = [
-                ("Nợ quá hạn", "QHAN", "#FF6347", "highlight-overdue"),  # Đỏ
-                ("Nợ khoanh", "KHOANH", "#FFA500")                    # Cam
+                ("Kế hoạch CT40", "KH_CHITHI40", "#FF6347", "highlight-overdue"),  # Đỏ
+                ("Thực hiện CT40", "TH_CHITHI40", "#FFA500"),                   # Cam
+                ("Còn phải thực hiện CT40", "CP_THCT40", "#6495ed"),
+                ("Lũy kế số dư CT40", "LK_CT40", "#ff1493")
             ]
             for i, (label, column, color, *extra_class) in enumerate(metrics_group3):
-                with [col10, col11][i]:
+                with [col10, col11, col12, col13][i]:
                     if column in df.columns:
                         total_value = df[column].sum()
                         class_name = "metric-card " + (extra_class[0] if extra_class else "")
@@ -528,7 +529,27 @@ def home_page():
                             """,
                             unsafe_allow_html=True
                         )
-            
+            # Nhóm 4: Nợ quá hạn và Nợ khoanh
+            col15, col16 = st.columns(2)
+            metrics_group4 = [
+                ("Nợ quá hạn", "QHAN", "#FF6347", "highlight-overdue"),  # Đỏ
+                ("Nợ khoanh", "KHOANH", "#FFA500")                    # Cam
+            ]
+            for i, (label, column, color, *extra_class) in enumerate(metrics_group4):
+                with [col15, col16][i]:
+                    if column in df.columns:
+                        total_value = df[column].sum()
+                        class_name = "metric-card " + (extra_class[0] if extra_class else "")
+                        st.markdown(
+                            f"""
+                            <div class="{class_name}" style="background: linear-gradient(135deg, {color} 0%, #FFFFFF 100%);">
+                                <div class="metric-title">{label}</div>
+                                <div class="metric-value">{total_value:,.0f} VNĐ</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+ #----------------------------------------------------------------------------------------ket thuc dash           
             # --- Biểu đồ cột: Nợ quá hạn và Nợ khoanh cùng nhau ---
             df_sorted_combined = df.sort_values(by=["QHAN", "KHOANH"], ascending=False)
             fig_bar_combined = px.bar(
