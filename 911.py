@@ -92,17 +92,45 @@ def check_login(username, password):
     engine = get_db_engine()
     if not engine:
         return False
+    
     with engine.connect() as conn:
-        result = conn.execute(sa.text("SELECT COUNT(*) FROM LoginHistory WHERE Username = :username"), {"username": username}).scalar()
-        if result == 0:
+        trangthai = 'A'  # Trạng thái mong muốn
+        result = conn.execute(
+            sa.text("exec get_web_login @username=:username, @password=:password, @trangthai=:trangthai"),
+            {"username": username, "password": password, "trangthai": trangthai}
+        ).fetchone()
+        
+        if not result:
+            # Nếu không có kết quả, tài khoản hoặc mật khẩu sai
+            st.error("Tên đăng nhập hoặc mật khẩu không đúng!")
+            time.sleep(5)
+            return False
+        
+        # Kiểm tra trạng thái từ cột thứ 3 (index 2)
+        returned_trangthai = str(result[2])  # Cột TRANGTHAI (sau macb và matkhau)
+        if returned_trangthai != 'A':
+            st.error("Tài khoản chưa được cấp quyền đăng nhập!")
+            time.sleep(5)
+            return False
+        
+        # Nếu tài khoản hợp lệ và trạng thái là 'A', kiểm tra LoginHistory
+        login_count = conn.execute(
+            sa.text("SELECT COUNT(*) FROM LoginHistory WHERE Username = :username"),
+            {"username": username}
+        ).scalar()
+        
+        if login_count == 0:
             return None
-        result = conn.execute(sa.text("exec get_web_login @username=:username, @password=:password"), {"username": username, "password": password}).fetchone()
-        if result:
-            session_id = str(uuid.uuid4())
-            conn.execute(sa.text("INSERT INTO LoginHistory (Username, LoginTime, SessionID) VALUES (:username, GETDATE(), :session_id)"), 
-                         {"username": username, "session_id": session_id})
-            conn.commit()
-        return result is not None
+        
+        # Ghi lịch sử đăng nhập
+        session_id = str(uuid.uuid4())
+        conn.execute(
+            sa.text("INSERT INTO LoginHistory (Username, LoginTime, SessionID) VALUES (:username, GETDATE(), :session_id)"),
+            {"username": username, "session_id": session_id}
+        )
+        conn.commit()
+        #time.sleep(5)
+        return True
 
 def get_login_count():
     """Lấy tổng số lượt đăng nhập từ LoginHistory."""
@@ -406,10 +434,10 @@ def login_page():
                     st.session_state.update(logged_in=True, username=username)
                     st.success("Đăng nhập thành công!")
                 else:
-                    st.error("Tên đăng nhập hoặc mật khẩu không đúng!")
+                    # Thông báo lỗi đã được xử lý trong check_login, không cần thêm ở đây
+                    pass
                 st.rerun()
 
-# Session State Initialization
 # Session State Initialization
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
