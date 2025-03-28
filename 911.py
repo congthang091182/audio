@@ -107,9 +107,23 @@ def check_login(username, password):
         
         stored_username, stored_hash, trangthai = result
         
+        # Kiểm tra định dạng chuỗi băm
+        if not isinstance(stored_hash, str) or not stored_hash.startswith('$2'):
+            st.error("Mật khẩu trong cơ sở dữ liệu không hợp lệ. Vui lòng reset mật khẩu.")
+            time.sleep(5)
+            return False
+        
+        # Chuyển stored_hash thành bytes
+        try:
+            stored_hash_bytes = stored_hash.encode('utf-8')
+        except Exception as e:
+            st.error(f"Lỗi khi chuyển đổi chuỗi băm: {e}")
+            time.sleep(5)
+            return False
+        
         # Kiểm tra mật khẩu bằng bcrypt
         try:
-            if not bcrypt.checkpw(password.encode('utf-8'), stored_hash):  # Bỏ .encode('utf-8') khỏi stored_hash
+            if not bcrypt.checkpw(password.encode('utf-8'), stored_hash_bytes):
                 st.error("Mật khẩu không đúng!")
                 time.sleep(5)
                 return False
@@ -408,8 +422,8 @@ def home_page():
 
     with tab3:
         st.markdown("<div class='card'><h2 style='text-align: center;'>Dashboard Báo cáo</h2>", unsafe_allow_html=True)
-    
-        # CSS hiện đại hóa
+        
+        # CSS hiện đại hóa với viền cho các nhóm
         st.markdown("""
             <style>
             .metric-card {
@@ -437,6 +451,22 @@ def home_page():
                 50% { box-shadow: 0 0 20px #FF6347; }
                 100% { box-shadow: 0 0 5px #FF6347; }
             }
+            /* Thêm viền và kiểu dáng cho nhóm */
+            .metric-group {
+                border: 2px solid #2E86C1;
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 20px;
+                background-color: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            }
+            .group-title {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2E86C1;
+                margin-bottom: 15px;
+                text-align: center;
+            }
             </style>
         """, unsafe_allow_html=True)
         
@@ -444,10 +474,10 @@ def home_page():
         if not engine:
             st.error("Không thể kết nối tới cơ sở dữ liệu!")
             return
-    
+        
         date_str = st.session_state.current_date
         report_type = st.session_state.current_report_type
-    
+        
         with st.spinner("Đang tải dữ liệu Dashboard..."):
             # Lấy dữ liệu báo cáo
             df = fetch_report_data(engine, report_type, date_str)
@@ -455,20 +485,18 @@ def home_page():
                 st.warning("Không có dữ liệu để hiển thị Dashboard.")
                 return
             
-            # --- Tổng quan ---
-            st.subheader("Tổng quan")
-            
-            # Nhóm 1: Cho vay và Thu nợ
-            col1, col2,col3,col4,col5 = st.columns(5)
+            # --- Nhóm 1: Cho vay và Thu nợ ---
+            st.markdown("<div class='metric-group'><div class='group-title'>Cho vay và Thu nợ</div>", unsafe_allow_html=True)
+            col1, col2, col3, col4, col5 = st.columns(5)
             metrics_group1 = [
-                ("Cho vay", "CHOVAY", "#32CD32"),  # Xanh lá
-                ("Thu nợ", "THUNO", "#87CEEB") ,    # Xanh nhạt
-                ("Tăng giảm Dư nợ", "TG_DUNO", "#5f9ea0") ,    # Xanh nhạt
-                ("Tăng giảm NQH", "TG_QHAN", "#008b8b") ,    # Xanh nhạt
-                ("Tăng giảm khoanh", "TG_KHOANH", "#bdb76b")     # Xanh nhạt
+                ("Cho vay", "CHOVAY", "#32CD32"),
+                ("Thu nợ", "THUNO", "#87CEEB"),
+                ("Tăng giảm Dư nợ", "TG_DUNO", "#5f9ea0"),
+                ("Tăng giảm NQH", "TG_QHAN", "#008b8b"),
+                ("Tăng giảm khoanh", "TG_KHOANH", "#bdb76b")
             ]
             for i, (label, column, color) in enumerate(metrics_group1):
-                with [col1, col2,col3,col4,col5][i]:
+                with [col1, col2, col3, col4, col5][i]:
                     if column in df.columns:
                         total_value = df[column].sum()
                         st.markdown(
@@ -480,14 +508,16 @@ def home_page():
                             """,
                             unsafe_allow_html=True
                         )
+            st.markdown("</div>", unsafe_allow_html=True)
             
-            # Nhóm 2: Kế hoạch, Dư nợ, Còn phải thực hiện, Tỷ lệ hoàn thành
+            # --- Nhóm 2: Kế hoạch, Dư nợ, Còn phải thực hiện, Tỷ lệ hoàn thành ---
+            st.markdown("<div class='metric-group'><div class='group-title'>Kế hoạch và Dư nợ</div>", unsafe_allow_html=True)
             col6, col7, col8, col9 = st.columns(4)
             metrics_group2 = [
-                ("Kế hoạch", "TONG_KH", "#2E86C1"),        # Xanh dương đậm
-                ("Dư nợ", "DUNO", "#4682B4"),             # Xanh dương trung
-                ("Còn phải thực hiện", "CPTHUCHIEN", "#ADD8E6"),  # Xanh dương nhạt
-                ("Tỷ lệ hoàn thành", "TYLE", "#FFD700")      # Vàng
+                ("Kế hoạch", "TONG_KH", "#2E86C1"),
+                ("Dư nợ", "DUNO", "#4682B4"),
+                ("Còn phải thực hiện", "CPTHUCHIEN", "#ADD8E6"),
+                ("Tỷ lệ hoàn thành", "TYLE", "#FFD700")
             ]
             for i, (label, column, color) in enumerate(metrics_group2):
                 with [col6, col7, col8, col9][i]:
@@ -507,11 +537,14 @@ def home_page():
                             """,
                             unsafe_allow_html=True
                         )
-            #Nhóm 3: chỉ thị 40
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # --- Nhóm 3: Chỉ thị 40 ---
+            st.markdown("<div class='metric-group'><div class='group-title'>Chỉ thị 40</div>", unsafe_allow_html=True)
             col10, col11, col12, col13 = st.columns(4)
             metrics_group3 = [
-                ("Kế hoạch CT40", "KH_CHITHI40", "#FF6347", "highlight-overdue"),  # Đỏ
-                ("Thực hiện CT40", "TH_CHITHI40", "#FFA500"),                   # Cam
+                ("Kế hoạch CT40", "KH_CHITHI40", "#FF6347", "highlight-overdue"),
+                ("Thực hiện CT40", "TH_CHITHI40", "#FFA500"),
                 ("Còn phải thực hiện CT40", "CP_THCT40", "#6495ed"),
                 ("Lũy kế số dư CT40", "LK_CT40", "#ff1493")
             ]
@@ -529,11 +562,14 @@ def home_page():
                             """,
                             unsafe_allow_html=True
                         )
-            # Nhóm 4: Nợ quá hạn và Nợ khoanh
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # --- Nhóm 4: Nợ quá hạn và Nợ khoanh ---
+            st.markdown("<div class='metric-group'><div class='group-title'>Nợ quá hạn và Nợ khoanh</div>", unsafe_allow_html=True)
             col15, col16 = st.columns(2)
             metrics_group4 = [
-                ("Nợ quá hạn", "QHAN", "#FF6347", "highlight-overdue"),  # Đỏ
-                ("Nợ khoanh", "KHOANH", "#FFA500")                    # Cam
+                ("Nợ quá hạn", "QHAN", "#FF6347", "highlight-overdue"),
+                ("Nợ khoanh", "KHOANH", "#FFA500")
             ]
             for i, (label, column, color, *extra_class) in enumerate(metrics_group4):
                 with [col15, col16][i]:
@@ -549,6 +585,117 @@ def home_page():
                             """,
                             unsafe_allow_html=True
                         )
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+            # --- Biểu đồ cột: Nợ quá hạn và Nợ khoanh cùng nhau ---
+            df_sorted_combined = df.sort_values(by=["QHAN", "KHOANH"], ascending=False)
+            fig_bar_combined = px.bar(
+                df_sorted_combined,
+                x="TENPGD",
+                y=["QHAN", "KHOANH"],
+                title="Nợ quá hạn và Nợ khoanh theo PGD (Sắp xếp giảm dần)",
+                barmode="group",
+                color_discrete_map={"QHAN": "#FF6347", "KHOANH": "#FFA500"},
+                text_auto=True,
+                height=450
+            )
+            fig_bar_combined.update_traces(
+                textposition="auto",
+                marker=dict(line=dict(width=1, color="#FFFFFF"))
+            )
+            fig_bar_combined.update_layout(
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(size=14),
+                title_font_size=20
+            )
+            st.plotly_chart(fig_bar_combined, use_container_width=True, key="chart_combined_qhan_khoanh")
+            
+            # --- Biểu đồ cột: Nợ quá hạn riêng ---
+            df_sorted_qhan = df.sort_values(by="QHAN", ascending=False)
+            fig_bar_qhan = px.bar(
+                df_sorted_qhan,
+                x="TENPGD",
+                y="QHAN",
+                title="Nợ quá hạn theo PGD (Sắp xếp giảm dần)",
+                color="TENPGD",
+                color_discrete_sequence=px.colors.sequential.Reds,
+                text_auto=True,
+                height=450
+            )
+            fig_bar_qhan.update_traces(
+                textposition="auto",
+                marker=dict(line=dict(width=1, color="#FFFFFF"))
+            )
+            fig_bar_qhan.update_layout(
+                plot_bgcolor="rgba(0,0,0,0)",
+                paper_bgcolor="rgba(0,0,0,0)",
+                font=dict(size=14),
+                title_font_size=20
+            )
+            st.plotly_chart(fig_bar_qhan, use_container_width=True, key="chart_qhan")
+            
+            # --- Biểu đồ cột: Nợ khoanh riêng ---
+            if "TENPGD" in df.columns and "KHOANH" in df.columns:
+                st.subheader("Phân tích Nợ khoanh theo PGD")
+                df_sorted_noikhoanh = df.sort_values(by="KHOANH", ascending=False)
+                fig_bar_noikhoanh = px.bar(
+                    df_sorted_noikhoanh,
+                    x="TENPGD",
+                    y="KHOANH",
+                    title="Nợ khoanh theo PGD (Sắp xếp giảm dần)",
+                    color="TENPGD",
+                    color_discrete_sequence=px.colors.sequential.Oranges,
+                    text_auto=True,
+                    height=450
+                )
+                fig_bar_noikhoanh.update_traces(
+                    textposition="auto",
+                    marker=dict(line=dict(width=1, color="#FFFFFF"))
+                )
+                fig_bar_noikhoanh.update_layout(
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    font=dict(size=14),
+                    title_font_size=20
+                )
+                st.plotly_chart(fig_bar_noikhoanh, use_container_width=True, key="chart_khoanh")
+            
+            # --- Biểu đồ xu hướng: Cho vay, Thu nợ, Nợ quá hạn ---
+            st.subheader("Xu hướng Cho vay, Thu nợ, Nợ quá hạn (7 ngày gần nhất)")
+            dates = [(datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
+            df_trend = pd.DataFrame()
+            with engine.connect() as conn:
+                for d in dates:
+                    df_temp = pd.read_sql(sa.text("exec get_THA_SAVE_DIENBAO @NGAYBC=:date"), conn, params={"date": d})
+                    if not df_temp.empty:
+                        df_trend = pd.concat([df_trend, df_temp.assign(Ngay=d)])
+            
+            if not df_trend.empty and all(col in df_trend.columns for col in ["CHOVAY", "THUNO", "QHAN"]):
+                df_trend_grouped = df_trend.groupby("Ngay")[["CHOVAY", "THUNO", "QHAN"]].sum().reset_index()
+                fig_trend = px.line(
+                    df_trend_grouped.melt(id_vars=["Ngay"], value_vars=["CHOVAY", "THUNO", "QHAN"]),
+                    x="Ngay",
+                    y="value",
+                    color="variable",
+                    title="Xu hướng Cho vay, Thu nợ, Nợ quá hạn",
+                    height=450,
+                    line_shape="spline",
+                    color_discrete_map={"CHOVAY": "#32CD32", "THUNO": "#87CEEB", "QHAN": "#FF6347"}
+                )
+                fig_trend.update_traces(line=dict(width=3))
+                fig_trend.update_layout(
+                    plot_bgcolor="rgba(0,0,0,0)",
+                    paper_bgcolor="rgba(0,0,0,0)",
+                    font=dict(size=14),
+                    title_font_size=20,
+                    legend_title_text="Chỉ tiêu"
+                )
+                st.plotly_chart(fig_trend, use_container_width=True, key="chart_trend")
+            else:
+                st.info("Không đủ dữ liệu lịch sử để vẽ xu hướng. Cần ít nhất 2 ngày dữ liệu với các cột CHOVAY, THUNO, QHAN.")
+        
+            st.markdown("</div>", unsafe_allow_html=True)
  #----------------------------------------------------------------------------------------ket thuc dash           
             # --- Biểu đồ cột: Nợ quá hạn và Nợ khoanh cùng nhau ---
             df_sorted_combined = df.sort_values(by=["QHAN", "KHOANH"], ascending=False)
