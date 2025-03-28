@@ -1,6 +1,6 @@
-# change_password_module.py
 import streamlit as st
 import pyodbc
+import time
 
 def connect_to_sql_server():
     """Kết nối đến SQL Server sử dụng thông tin xác thực từ secrets"""
@@ -35,7 +35,7 @@ def check_old_password(username, old_password):
     conn = connect_to_sql_server()
     if not conn:
         return False
-        
+    
     try:
         cursor = conn.cursor()
         query = "SELECT matkhau FROM loggin WHERE macb = ?"
@@ -43,9 +43,16 @@ def check_old_password(username, old_password):
         result = cursor.fetchone()
         
         if result:
-            stored_password = result[0]
-            return stored_password == old_password
-        return False
+            stored_password = result[0].strip()
+            input_password = old_password.strip()
+            if stored_password == input_password:
+                return True
+            else:
+                st.error("Mật khẩu cũ không khớp với dữ liệu trong cơ sở dữ liệu!")
+                return False
+        else:
+            st.error("Không tìm thấy người dùng trong cơ sở dữ liệu!")
+            return False
     except pyodbc.Error as e:
         st.error(f"Lỗi truy vấn database: {e}")
         return False
@@ -64,8 +71,7 @@ def update_password(username, new_password):
         cursor.execute(query, (new_password, username))
         cursor.execute("SELECT @@ROWCOUNT")
         rows_affected = cursor.fetchone()[0]
-        ###
-        #if user:
+        #if user: insert de coi nhu la duoc chap nhan log in, để lsau k phải đăng doi mk
         session_id = "test"
         cursor.execute(
                 "INSERT INTO LoginHistory (Username, LoginTime, SessionID) VALUES (?, GETDATE(), ?)",
@@ -105,12 +111,16 @@ def change_password_form(username):
         elif len(new_password) < 6:
             st.error("Mật khẩu mới phải có ít nhất 6 ký tự!")
         elif update_password(username, new_password):
-            st.success("Đổi mật khẩu thành công!")
-            st.session_state.show_change_password = False  # Ẩn form
+            st.success("Đổi mật khẩu thành công! Bạn sẽ được đăng xuất ngay bây giờ.")
+            time.sleep(2)  # Đợi 2 giây để người dùng thấy thông báo
+            # Đặt lại tất cả trạng thái để quay về màn hình đăng nhập
+            st.session_state.logged_in = False
+            st.session_state.show_change_password = False
+            st.session_state.show_new_password_form = False
             st.rerun()
         else:
             st.error("Đổi mật khẩu thất bại!")
     
     if cancel_button:
-        st.session_state.show_change_password = False  # Ẩn form khi nhấn Hủy
+        st.session_state.show_change_password = False
         st.rerun()

@@ -11,13 +11,14 @@ from io import BytesIO
 import os
 import uuid
 import base64
-
+import time
 # Custom functions import
 from def_N_fileXLS import write_to_excel_template9
 from def_One_filexls import write_to_excel_template_one
 from def_pos_to_xls import export_pos_to_excel
 from def_pos_to_dvut_xls import export_pos_to_DVUT_excel
 from def_tao_mat_khau import change_password_form
+from def_export_pdf import export_to_pdf  # Import hàm xuất PDF
 
 # Custom CSS (giữ nguyên)
 st.markdown("""
@@ -191,13 +192,13 @@ def export_to_excel(df, report_type, template_path, output_file, engine=None, da
                         st.info(f"Đã đổi tên các cột trùng lặp trong extra_df {i}.")
                     extra_dfs.append(df_temp)
             # Debug trước khi gọi write_to_excel_template9
-            #st.write("Debug df:", type(df), df.head())
-            #for i, extra_df in enumerate(extra_dfs):
-            #st.write(f"Debug extra_df {i+1}:", type(extra_df), extra_df.head())
+            st.write("Debug df:", type(df), df.head())
+            for i, extra_df in enumerate(extra_dfs):
+                st.write(f"Debug extra_df {i+1}:", type(extra_df), extra_df.head())
             write_to_excel_template9(template_path, df, *extra_dfs, startrow=15, startcol=2, output_path=output_file)
         else:
             # Debug trước khi gọi write_to_excel_template_one
-            #st.write("Debug df:", type(df), df.head())
+            st.write("Debug df:", type(df), df.head())
             write_to_excel_template_one(template_path, df, startrow=15, startcol=1, output_path=output_file)
         return True
     except AttributeError as e:
@@ -225,12 +226,12 @@ def export_to_excel_pos(df, report_type, template_path, output_file):
         st.error(f"Lỗi khi tạo file Excel POS: {e}")
         return False
 
-def render_download_button(output_file):
-    """Hiển thị nút tải file Excel."""
+def render_download_button(output_file, mime_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"):
+    """Hiển thị nút tải file (Excel hoặc PDF)."""
     if os.path.exists(output_file):
         with open(output_file, "rb") as f:
-            st.download_button("Tải xuống Excel", f, file_name=output_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        st.success("File Excel đã được tạo!")
+            st.download_button(f"Tải xuống {os.path.splitext(output_file)[1][1:].upper()}", f, file_name=output_file, mime=mime_type)
+        st.success(f"File {os.path.splitext(output_file)[1][1:].upper()} đã được tạo!")
     else:
         st.error(f"Không tìm thấy file: {output_file}")
 
@@ -288,18 +289,68 @@ def home_page():
                     "BC kết quả cho vay các chương trình tín dụng": "BC_HONGHEO_DTCS.xlsx",
                     "BC đơn vị ủy thác": "BC_TOCHUCHOI_M01.xlsx"
                 }
-                output_file = f"{report_type.replace(' ', '_')}_{file_date_str}.xlsx"
+                output_file_excel = f"{report_type.replace(' ', '_')}_{file_date_str}.xlsx"
+                output_file_pdf = f"{report_type.replace(' ', '_')}_{file_date_str}.pdf"
                 template_path = templates.get(report_type, "")
 
-                col1, col2 = st.columns(2)
+                # Thêm lựa chọn cột cho PDF
+                st.markdown("### Tùy chỉnh cột cho báo cáo PDF")
+                selected_columns = st.multiselect(
+                    "Chọn cột để xuất PDF",
+                    options=df.columns.tolist(),
+                    default=df.columns.tolist()[:3],  # Mặc định chọn 3 cột đầu tiên
+                    key=f"select_columns_{report_type}"
+                )
+
+                col1, col2, col3 = st.columns(3)  # Thêm cột cho nút PDF
                 with col1:
                     if st.button("Xuất báo cáo Excel", key=f"export_{report_type}"):
-                        if export_to_excel(df, report_type, template_path, output_file, engine, date_str, multi_file=report_type == "Điện báo hàng ngày"):
-                            render_download_button(output_file)
+                        if export_to_excel(df, report_type, template_path, output_file_excel, engine, date_str, multi_file=report_type == "Điện báo hàng ngày"):
+                            render_download_button(output_file_excel)
                 with col2:
                     if report_type in ["BC kết quả cho vay các chương trình tín dụng", "BC đơn vị ủy thác"] and st.button("Xuất Excel (Tất cả POS)", key=f"export_pos_{report_type}"):
-                        if export_to_excel_pos(df, report_type, template_path, output_file):
-                            render_download_button(output_file)
+                        if export_to_excel_pos(df, report_type, template_path, output_file_excel):
+                            render_download_button(output_file_excel)
+                with col3:
+                    # Khởi tạo trạng thái để kiểm soát việc tạo PDF
+                    if "pdf_generated" not in st.session_state:
+                        st.session_state.pdf_generated = False
+
+                    # Thêm tùy chọn bỏ qua biểu đồ
+                    include_chart = st.checkbox("Bao gồm biểu đồ trong PDF", value=True, key=f"include_chart_{report_type}")
+
+                    if st.button("Xuất báo cáo PDF", key=f"export_pdf_{report_type}"):
+                        if not selected_columns:
+                            st.warning("Vui lòng chọn ít nhất một cột để xuất PDF.")
+                        else:
+                            # Debug: Hiển thị kiểu dữ liệu của các cột được chọn
+                            # st.write("Kiểu dữ liệu của các cột được chọn:")
+                            # for col in selected_columns:
+                            #     st.write(f"{col}: {df[col].dtype}")
+                            # # Debug: Hiển thị một số dòng dữ liệu
+                            # st.write("Dữ liệu mẫu:", df[selected_columns].head())
+            
+                            # Hiển thị spinner trong khi tạo PDF
+                            with st.spinner("Đang tạo báo cáo PDF..."):
+                                start_time = time.time()
+                                pdf_buffer = export_to_pdf(df, selected_columns, f"Báo cáo: {report_type}", output_file_pdf, include_chart=include_chart)
+                                end_time = time.time()
+                                st.session_state.pdf_buffer = pdf_buffer  # Lưu buffer vào trạng thái
+                                st.session_state.pdf_generated = True  # Đánh dấu đã tạo PDF
+                                st.session_state.pdf_time = end_time - start_time  # Lưu thời gian xử lý
+
+            # Hiển thị nút tải xuống nếu PDF đã được tạo
+            if st.session_state.pdf_generated:
+                st.download_button(
+                    label="Tải xuống PDF",
+                    data=st.session_state.pdf_buffer,
+                    file_name=output_file_pdf,
+                    mime="application/pdf"
+                )
+                st.success(f"File PDF đã được tạo! Thời gian xử lý: {st.session_state.pdf_time:.2f} giây.")
+                # Reset trạng thái sau khi tải xuống
+                if st.button("Tạo PDF mới", key=f"reset_pdf_{report_type}"):
+                   st.session_state.pdf_generated = False
 
     with tab2:
         st.markdown("<div class='card'><h2>Biểu đồ phân tích</h2>", unsafe_allow_html=True)
@@ -359,6 +410,7 @@ def login_page():
                 st.rerun()
 
 # Session State Initialization
+# Session State Initialization
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "show_new_password_form" not in st.session_state:
@@ -369,6 +421,10 @@ if "show_change_password" not in st.session_state:
     st.session_state.show_change_password = False
 
 # Main Logic
+# st.write("Debug: logged_in =", st.session_state.logged_in)
+# st.write("Debug: show_new_password_form =", st.session_state.show_new_password_form)
+# st.write("Debug: show_change_password =", st.session_state.show_change_password)
+
 if st.session_state.logged_in:
     home_page()
 elif st.session_state.show_new_password_form:
