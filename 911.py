@@ -220,13 +220,13 @@ def export_to_excel(df, report_type, template_path, output_file, engine=None, da
                         st.info(f"Đã đổi tên các cột trùng lặp trong extra_df {i}.")
                     extra_dfs.append(df_temp)
             # Debug trước khi gọi write_to_excel_template9
-            st.write("Debug df:", type(df), df.head())
-            for i, extra_df in enumerate(extra_dfs):
-                st.write(f"Debug extra_df {i+1}:", type(extra_df), extra_df.head())
+            #st.write("Debug df:", type(df), df.head())
+            #for i, extra_df in enumerate(extra_dfs):
+                #st.write(f"Debug extra_df {i+1}:", type(extra_df), extra_df.head())
             write_to_excel_template9(template_path, df, *extra_dfs, startrow=15, startcol=2, output_path=output_file)
         else:
             # Debug trước khi gọi write_to_excel_template_one
-            st.write("Debug df:", type(df), df.head())
+            #st.write("Debug df:", type(df), df.head())
             write_to_excel_template_one(template_path, df, startrow=15, startcol=1, output_path=output_file)
         return True
     except AttributeError as e:
